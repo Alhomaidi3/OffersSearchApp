@@ -1,10 +1,10 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System;
 using System.Data;
 
-namespace OffersSearchApp2
+
+namespace OffersSearchApp
 {
     public class WordReportService
     {
@@ -12,116 +12,124 @@ namespace OffersSearchApp2
         {
             if (offersTable == null || offersTable.Rows.Count == 0)
             {
-                MessageBox.Show("لا توجد بيانات!");
+                MessageBox.Show("لا توجد بيانات لإنشاء التقرير!");
                 return;
             }
 
+            // تصفية البيانات حسب الربع
             var data = offersTable.AsEnumerable()
                 .Where(r => r["Quarter"].ToString() == quarter)
                 .ToList();
 
             if (data.Count == 0)
             {
-                MessageBox.Show("لا توجد بيانات لهذا الربع!");
+                MessageBox.Show($"لا توجد بيانات للربع {quarter}!");
                 return;
             }
 
             using var sfd = new SaveFileDialog();
+            sfd.Filter = "Word Document|*.docx";
+            sfd.FileName = "Report_" + quarter + ".docx";
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            string filePath = sfd.FileName;
+            string templatePath = @"C:\Users\md\Desktop\Code\OffersSearchApp\OffersSearchApp\Templates\ReportTemplate.dotx";
+
+            try
             {
-                sfd.Filter = "Word Document|*.docx";
-                sfd.Title = "حفظ التقرير كملف Word";
-                sfd.FileName = $"Report_{quarter}.docx";
+                File.Copy(templatePath, filePath, true);
 
-                if (sfd.ShowDialog() != DialogResult.OK)
-                    return;
-
-                string filePath = sfd.FileName;
-
-                using var doc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document);
+                using (var doc = WordprocessingDocument.Open(filePath, true))
                 {
-                    MainDocumentPart mainPart = doc.AddMainDocumentPart();
-                    mainPart.Document = new Document();
-                    var body = new Body();
-                    body.Append(FormatText(""));
+                    doc.ChangeDocumentType(WordprocessingDocumentType.Document);
+                    if (doc.MainDocumentPart?.Document?.Body == null)
+                    {
+                        MessageBox.Show("خطأ في بنية ملف الوورد!");
+                        return;
+                    }
 
-                    body.Append(FormatText("تقرير عروض الاسعار ", fontSize: 36, isBold: true, isUnderline: true, isTitle: true));
-                    body.Append(FormatText(""));
+                    var body = doc.MainDocumentPart.Document.Body;
 
-                    body.Append(FormatText($"التاريخ                                                                                                                                {DateTime.Now:dd/MM/yyyy} "));
-                    AppendEmptyLines(body, 8);
-                    body.Append(FormatText("يهدف هذا التقرير إلى توثيق وحصر الموردين الذين تم التواصل معهم خلال الفترة الماضية، وذلك ضمن جهود القسم في البحث عن أفضل العروض المتاحة للأصناف المطلوبة                                                                                  ."));
-                    body.Append(FormatText(""));
-                    body.Append(FormatText("يعرض التقرير قائمة الموردين الذين جرى التواصل معهم، مع توضيح الأصناف التي تم البحث عنها لدى كل مورد، والأسعار المقترحة لكل صنف حسب العروض المستلمة.                                                                                                  "));
-                    body.Append(FormatText(""));
-                    body.Append(FormatText("كما يوضح التقرير مدى توفر الأصناف في السوق وعدد الموردين الذين استجابوا لكل صنف، مما يساعد على تقييم سهولة أو صعوبة الحصول على بعض المنتجات                                                                                                         ."));
-                    AppendEmptyLines(body, 9);
+                    int productsCount = data.Select(r => r["ProductName"].ToString()).Distinct().Count();
+                    int suppliersCount = data.Select(r => r["SupplierName"].ToString()).Distinct().Count();
 
+                    var replacements = new Dictionary<string, string>
+                    {
+                        { "{{DATE}}", DateTime.Now.ToString("dd/MM/yyyy") },
+                        { "{{TITLE1}}", "تقرير عروض الأسعار" },
+                        { "{{INTRO1}}", "يهدف هذا التقرير إلى توثيق وحصر الموردين الذين تم التواصل معهم خلال الفترة الماضية، وذلك ضمن جهود القسم في البحث عن أفضل العروض المتاحة للأصناف المطلوبة." },
+                        { "{{INTRO2}}", "يعرض التقرير قائمة الموردين الذين جرى التواصل معهم، مع توضيح الأصناف التي تم البحث عنها لدى كل مورد، والأسعار المقترحة لكل صنف حسب العروض المستلمة." },
+                        { "{{INTRO3}}", "كما يوضح التقرير مدى توفر الأصناف في السوق وعدد الموردين الذين استجابوا لكل صنف، مما يساعد على تقييم سهولة أو صعوبة الحصول على بعض المنتجات." },
+                        
+                        { "{{TITLE2}}", "1. ملخص عدد الأصناف والموردين" },
+                        { "{{INTRO4}}", "يتضمن هذا القسم معلومات حول الأصناف المتاحة وعدد الموردين لكل صنف، بالإضافة إلى إجمالي عدد الموردين" },
+                        { "{{INTRO5}}", $"تم البحث عن {productsCount} صنف خلال الفترة الأخيرة." },
+                        { "{{INTRO6}}", $"إجمالي عدد الموردين {suppliersCount} مورد." },
+                        { "{{INTRO7}}", "وهذا الجدول تفصيل عدد الموردين لكل صنف:" },
 
-                    AddSummary(body, data);
-                    AddSupplierTable(body, data);
-                    AddPriceTable(body, data);
-                    AddBestSupplierTable(body, data);
+                        { "{{TITLE3}}", "2. ملخص الأسعار لكل صنف" },
+                        { "{{INTRO8}}", "يوضح هذا القسم مقارنة الأسعار المقدمة من الموردين لكل صنف، مع تحديد المورد الأرخص." },
+                        { "{{INTRO9}}", "جدول تفصيل الأسعار المقدمة لكل صنف:" },
+                        { "{{TITLE4}}", "3. جدول تفصيل أفضل الموردين لكل صنف:" }
+                    };
 
-                    mainPart.Document.Append(body);
+                    
+                    var paragraphs = body.Descendants<Paragraph>().ToList();
+                    foreach (var para in paragraphs)
+                    {
+                        foreach (var kvp in replacements)
+                        {
+                            if (para.InnerText.Contains(kvp.Key))
+                            {
+                                ReplaceTextInParagraph(para, kvp.Key, kvp.Value);
+                            }
+                        }
+                    }
+
+                    ReplaceTagWithTable(body, "{{SUPPLIERS_TABLE}}", BuildSupplierTable(data));
+                    ReplaceTagWithTable(body, "{{PRICES_TABLE}}", BuildPriceTable(data));
+                    ReplaceTagWithTable(body, "{{BEST_SUPPLIER}}", BuildBestSupplierTable(data));
+
+                    doc.MainDocumentPart.Document.Save();
+                }
+                MessageBox.Show("تم إنشاء التقرير بنجاح!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("خطأ: " + ex.Message);
+            }
+        }
+
+        private static void ReplaceTextInParagraph(Paragraph para, string search, string replace)
+        {
+            var texts = para.Descendants<Text>().ToList();
+            if (texts.Count == 0) return;
+            string fullText = para.InnerText;
+            if (fullText.Contains(search))
+            {
+                string newText = fullText.Replace(search, replace);
+                foreach (var t in texts) t.Text = "";
+                texts[0].Text = newText;
+            }
+        }
+
+        private static void ReplaceTagWithTable(Body body, string tag, Table table)
+        {
+            var para = body.Descendants<Paragraph>().FirstOrDefault(p => p.InnerText.Contains(tag));
+            if (para != null)
+            {
+                if (para?.Parent != null)
+                {
+                    para.Parent.InsertAfter(table, para);
+                    para.Remove();
                 }
             }
         }
 
-        private static Paragraph FormatText(string text, int fontSize = 24, bool isBold = false, bool isUnderline = false, bool isTitle = false)
+        private static Table BuildSupplierTable(List<DataRow> data)
         {
-            var runProps = new RunProperties(
-                new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman", ComplexScript = "Times New Roman" },
-                new FontSize() { Val = fontSize.ToString() },
-                new FontSizeComplexScript() { Val = fontSize.ToString() }
-            );
-
-            if (isBold) runProps.Append(new Bold(), new BoldComplexScript());
-            if (isUnderline) runProps.Append(new Underline() { Val = UnderlineValues.Single });
-
-            var paragraph = new Paragraph(
-                new Run(runProps, new Text(text) { Space = SpaceProcessingModeValues.Preserve })
-            );
-
-            var paraProps = new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Center },
-                new BiDi() { Val = OnOffValue.FromBoolean(true) } 
-            );
-
-            if (isTitle)
-            {
-                paraProps.Append(new SpacingBetweenLines() { Before = "200", After = "200" });
-            }
-
-            paragraph.ParagraphProperties = paraProps;
-            return paragraph;
-        }
-        private static void AppendEmptyLines(Body body, int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                body.Append(FormatText(""));
-            }
-        }
-
-        private static void AddSummary(Body body, List<DataRow> data)
-        {
-            var products = data.Select(r => r["ProductName"].ToString()).Distinct().Count();
-            var suppliers = data.Select(r => r["SupplierName"].ToString()).Distinct().Count();
-
-            body.Append(FormatText(" .1ملخص عدد الأصناف والموردين", fontSize: 36, isBold: true, isUnderline: true, isTitle: true));
-            body.Append(FormatText(""));
-            body.Append(FormatText("يتضمن هذا القسم معلومات حول الأصناف المتاحة وعدد الموردين لكل صنف، بالإضافة إلى إجمالي عدد الموردين             "));
-            body.Append(FormatText($"تم البحث عن {products} صنف خلال الفترة الأخيرة                                                                                                    "));
-            body.Append(FormatText($"إجمالي عدد الموردين {suppliers} مورد                                                                                                                  "));
-        }
-
-        private static void AddSupplierTable(Body body, List<DataRow> data)
-        {
-            body.Append(FormatText("وهذا الجدول تفصيل عدد الموردين لكل صنف                                                                                                 :"));
-            body.Append(FormatText(""));
-
             Table table = CreatePlainTable5();
-            table.Append(CreateRow(new[] { "Product Name", "Supplier Count" }, isHeader: true));
+            table.Append(CreateRow([ "Product Name", "Supplier Count" ], isHeader: true));
 
             var grouped = data.GroupBy(r => r["ProductName"].ToString())
                 .Select(g => new
@@ -133,80 +141,50 @@ namespace OffersSearchApp2
             for (int i = 0; i < grouped.Count; i++)
             {
                 var item = grouped[i];
-                table.Append(CreateRow(new[] { item.Product!, item.Count.ToString() }, rowIndex: i));
+                table.Append(CreateRow([ item.Product!, item.Count.ToString() ], rowIndex: i));
             }
-
-            body.Append(table);
+            return table;
         }
 
-        private static void AddPriceTable(Body body, List<DataRow> data)
+        private static Table BuildPriceTable(List<DataRow> data)
         {
-            // فواصل وعناوين
-            AppendEmptyLines(body, 2);
-            body.Append(FormatText(" .2ملخص الأسعار لكل صنف", fontSize: 36, isBold: true, isUnderline: true, isTitle: true));
-            body.Append(FormatText(""));
-            body.Append(FormatText("يوضح هذا القسم مقارنة الأسعار المقدمة من الموردين لكل صنف، مع تحديد المورد الأرخص                                       "));
-            body.Append(FormatText(""));
-            body.Append(FormatText("جدول تفصيل الأسعار المقدمة لكل صنف                                                                                                        :"));
-            body.Append(FormatText(""));
-
-            // إنشاء الجدول
             Table table = CreatePlainTable5();
-            table.Append(CreateRow(new[] { "Product Name", "Cheapest Price", "Most Expensive Price", "Average Price" }, isHeader: true));
-            // تجميع البيانات حسب الصنف
+            table.Append(CreateRow([ "Product Name", "Cheapest Price", "Most Expensive Price", "Average Price" ], isHeader: true));
+
             var grouped = data.GroupBy(r => r["ProductName"].ToString())
                 .Select(g =>
                 {
-                    // جميع الأسعار الصالحة فقط (غير فارغة)
                     var prices = g.Select(x => x.Field<decimal?>("Price")).Where(p => p.HasValue).Select(p => p!.Value).ToList();
-
                     return new
                     {
                         Product = g.Key,
                         Min = prices.Min(),
                         Max = prices.Max(),
                         Avg = prices.Average()
-                };
-                })
-                .ToList();
+                    };
+                }).ToList();
 
             for (int i = 0; i < grouped.Count; i++)
             {
                 var item = grouped[i];
-                table.Append(CreateRow(new[] {
-                    item.Product!,
-                    $"${item.Min:F2}",
-                    $"${item.Max:F2}",
-                    $"${item.Avg:F2}"
-                }, rowIndex: i));
+                table.Append(CreateRow([item.Product!, $"${item.Min:F2}", $"${item.Max:F2}", $"${item.Avg:F2}" ], rowIndex: i));
             }
-
-            body.Append(table);
+            return table;
         }
 
-        private static void AddBestSupplierTable(Body body, List<DataRow> data)
+        private static Table BuildBestSupplierTable(List<DataRow> data)
         {
-            AppendEmptyLines(body, 4);
-            body.Append(FormatText(" .3جدول تفصيل أفضل الموردين لكل صنف:", fontSize: 36, isBold: true, isUnderline: true, isTitle: true));
-            AppendEmptyLines(body, 3);
-
             Table table = CreatePlainTable5();
-            table.Append(CreateRow(new[] { "ProductName", "SupplierName", "Price" }, isHeader: true));
-                
+            table.Append(CreateRow([ "ProductName", "SupplierName", "Price" ], isHeader: true));
+
             var best = data.GroupBy(r => r["ProductName"].ToString())
                 .Select(g =>
                 {
                     var validPrices = g.Where(x => x["Price"] != DBNull.Value);
                     if (!validPrices.Any())
-                        return new
-                        {
-                            Product = g.Key,
-                            Supplier = "لا يوجد",
-                            Price = 0m
-                        };
+                        return new { Product = g.Key, Supplier = "لا يوجد", Price = 0m };
 
                     var min = validPrices.OrderBy(x => Convert.ToDecimal(x["Price"])).First();
-
                     return new
                     {
                         Product = g.Key,
@@ -215,24 +193,21 @@ namespace OffersSearchApp2
                     };
                 }).ToList();
 
-            // إضافة الصفوف باستخدام الدالة الجديدة
             for (int i = 0; i < best.Count; i++)
             {
                 var item = best[i];
                 table.Append(CreateRow(
-                    new[] { item.Product!, item.Supplier, $"${item.Price:F2}" },
+                    [item.Product!, item.Supplier, $"${item.Price:F2}" ],
                     rowIndex: i,
-                    customWidths: new[] { 2448, 4320, 1008 } 
+                    customWidths: [ 2448, 4320, 1008 ]
                 ));
             }
-
-            body.Append(table);
+            return table;
         }
 
         private static Table CreatePlainTable5()
         {
             var table = new Table();
-
             var tblProps = new TableProperties(
                 new TableBorders(
                     new TopBorder { Val = BorderValues.None },
@@ -245,7 +220,6 @@ namespace OffersSearchApp2
                 new TableLayout { Type = TableLayoutValues.Autofit },
                 new TableJustification { Val = TableRowAlignmentValues.Center }
             );
-
             table.AppendChild(tblProps);
             return table;
         }
@@ -257,15 +231,9 @@ namespace OffersSearchApp2
 
             for (int i = 0; i < cellTexts.Length; i++)
             {
-                string bgColor;
-                if (i == 0)
-                    bgColor = "FFFFFF";
-                else
-                bgColor = isHeader ? "FFFFFF" : (rowIndex % 2 == 0 ? "F2F2F2" : "FFFFFF");
-
+                string bgColor = (i == 0) ? "FFFFFF" : (isHeader ? "FFFFFF" : (rowIndex % 2 == 0 ? "F2F2F2" : "FFFFFF"));
                 int width = (customWidths != null && i < customWidths.Length) ? customWidths[i] : 2304;
                 string currentFontSize = (i == 0) ? "24" : "22";
-
                 bool bold = isHeader;
                 bool italic = isHeader || (i == 0);
                 bool bottomBorder = isHeader;
@@ -288,9 +256,7 @@ namespace OffersSearchApp2
             if (bold) runProps.Append(new Bold(), new BoldComplexScript());
 
             var cell = new TableCell(
-                new Paragraph(
-                    new Run(runProps, new Text(text) { Space = SpaceProcessingModeValues.Preserve })
-                )
+                new Paragraph(new Run(runProps, new Text(text) { Space = SpaceProcessingModeValues.Preserve }))
                 {
                     ParagraphProperties = new ParagraphProperties(
                         new Justification() { Val = JustificationValues.Center },
@@ -301,7 +267,6 @@ namespace OffersSearchApp2
             );
 
             var tcp = GetCellProperties(bgColor, width);
-
             if (rightBorder || bottomBorder)
             {
                 var borders = new TableCellBorders();
@@ -309,7 +274,6 @@ namespace OffersSearchApp2
                 if (bottomBorder) borders.Append(new BottomBorder { Val = BorderValues.Single, Size = 4, Color = "000000" });
                 tcp.Append(borders);
             }
-
             cell.Append(tcp);
             return cell;
         }
@@ -317,24 +281,12 @@ namespace OffersSearchApp2
         private static TableCellProperties GetCellProperties(string bgColor = "FFFFFF", int widthTwips = 2304)
         {
             var tcp = new TableCellProperties();
-
             tcp.Append(new TableCellWidth { Type = TableWidthUnitValues.Dxa, Width = widthTwips.ToString() });
-
             if (!string.IsNullOrEmpty(bgColor))
             {
-                tcp.Append(new Shading
-                {
-                    Color = "auto",
-                    Fill = bgColor,
-                    Val = ShadingPatternValues.Clear
-                });
+                tcp.Append(new Shading { Color = "auto", Fill = bgColor, Val = ShadingPatternValues.Clear });
             }
-
-            tcp.Append(new TableCellVerticalAlignment
-            {
-                Val = TableVerticalAlignmentValues.Center
-            });
-
+            tcp.Append(new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center });
             return tcp;
         }
     }

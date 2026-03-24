@@ -1,10 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
-using OffersSearchApp2;
-using System;
 using System.Data;
 using System.Data.OleDb;
 using System.Text;
-using System.Windows.Forms;
 
 namespace OffersSearchApp
 {
@@ -82,13 +79,13 @@ namespace OffersSearchApp
 
         #region Buttons Events
 
-        private void BtnRefresh_Click(object sender, EventArgs e)
+        private void BtnRefresh_Click(object? sender, EventArgs e)
         {
             LoadData();
             MessageBox.Show("تم تحديث البيانات بنجاح!");
         }
 
-        private void BtnDeleteAll_Click(object sender, EventArgs e)
+        private void BtnDeleteAll_Click(object? sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
                 "هل أنت متأكد من أنك تريد حذف كل السجلات؟\nهذه العملية غير قابلة للتراجع!",
@@ -118,7 +115,7 @@ namespace OffersSearchApp
             }
         }
 
-        private void BtnImportExcel_Click(object sender, EventArgs e)
+        private void BtnImportExcel_Click(object? sender, EventArgs e)
         {
             var ofd = new OpenFileDialog
             {
@@ -182,7 +179,7 @@ namespace OffersSearchApp
             }
         }
 
-        private void BtnAddSupplier_Click(object sender, EventArgs e)
+        private void BtnAddSupplier_Click(object? sender, EventArgs e)
         {
             if (dbConnection == null) return;
 
@@ -256,7 +253,7 @@ namespace OffersSearchApp
 
         private bool isExpanded = false;
 
-        private void BtnMenu_Click(object sender, EventArgs e)
+        private void BtnMenu_Click(object? sender, EventArgs e)
         {
             if (isExpanded)
             {
@@ -280,78 +277,27 @@ namespace OffersSearchApp
 
         #endregion
 
-        private void btnExportExcel_Click(object sender, EventArgs e)
+        private void btnExportExcel_Click(object? sender, EventArgs e)
         {
-            if (offersView == null || offersView.Count == 0)
-            {
-                MessageBox.Show("لا توجد بيانات للتصدير!");
-                return;
-            }
-
-            var sfd = new SaveFileDialog
-            {
-                Filter = "CSV File|*.csv",
-                Title = "حفظ الملف"
-            };
-
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-
             try
             {
-                var sb = new StringBuilder();
-
-                string Escape(string s)
-                {
-                    if (string.IsNullOrEmpty(s)) return "\"\"";
-                    return $"\"{s.Replace("\"", "\"\"")}\"";
-                }
-
-                for (int i = 0; i < offersGrid.Columns.Count; i++)
-                {
-                    sb.Append(Escape(offersGrid.Columns[i].HeaderText));
-                    if (i < offersGrid.Columns.Count - 1)
-                        sb.Append(",");
-                }
-                sb.AppendLine();
-
-                foreach (DataRowView row in offersView)
-                {
-                    for (int i = 0; i < offersGrid.Columns.Count; i++)
-                    {
-                        sb.Append(Escape(row[i]?.ToString()));
-                        if (i < offersGrid.Columns.Count - 1)
-                            sb.Append(",");
-                    }
-                    sb.AppendLine();
-                }
-
-                System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), Encoding.UTF8);
-
-                MessageBox.Show("تم تصدير البيانات بشكل صحيح!");
+                ExcelExportService.ExportToCsv(offersView, "OffersReport");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ أثناء التصدير: " + ex.Message);
+                MessageBox.Show("حدث خطأ أثناء التصدير: " + ex.Message);
             }
+
         }
-
-        private void btnWordReport_Click(object sender, EventArgs e)
+        private void btnWordReport_Click(object? sender, EventArgs e)
         {
             try
             {
-                if (offersTable == null || offersTable.Rows.Count == 0)
-                {
-                    MessageBox.Show("No data available to generate the report!");
-                    return;
-                }
-
                 WordReportService.GenerateWordReport(offersTable, cbQuarter.Text);
-
-                MessageBox.Show("Report has been created!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred while generating the report: " + ex.Message);
+                MessageBox.Show("حدث خطأ أثناء إنشاء التقرير: " + ex.Message);
             }
         }
     }
