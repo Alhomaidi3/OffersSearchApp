@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OffersSearchApp
 {
-    partial class FormAddOffer : Form
+    partial class FormEditOffer : Form
     {
         #region Windows Form Designer generated code
 
@@ -410,9 +410,9 @@ namespace OffersSearchApp
             ClientSize = new Size(938, 453);
             Controls.Add(mainFlow);
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            Name = "FormAddOffer";
+            Name = "FormEditOffer";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Add Offer";
+            Text = "Edit Offer";
             mainFlow.ResumeLayout(false);
             mainFlow.PerformLayout();
             row1.ResumeLayout(false);

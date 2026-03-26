@@ -43,7 +43,7 @@ namespace OffersSearchApp
                 {
                     sb.Append(Escape(table.Columns[i].ColumnName));
                     if (i < table.Columns.Count - 1)
-                        sb.Append(",");
+                        sb.Append(',');
                 }
                 sb.AppendLine();
 
@@ -54,7 +54,7 @@ namespace OffersSearchApp
                     {
                         sb.Append(Escape(row[i]?.ToString()));
                         if (i < table.Columns.Count - 1)
-                            sb.Append(",");
+                            sb.Append(',');
                     }
                     sb.AppendLine();
                 }
@@ -67,14 +67,6 @@ namespace OffersSearchApp
             {
                 MessageBox.Show("حدث خطأ أثناء التصدير: " + ex.Message);
             }
-        }
-
-        /// <summary>
-        /// نسخة تقبل DataTable مباشرة
-        /// </summary>
-        public static void ExportToCsv(DataTable table, string fileTitle = "ExportedData")
-        {
-            ExportToCsv(table.DefaultView, fileTitle);
         }
     }
 }

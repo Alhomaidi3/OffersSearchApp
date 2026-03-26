@@ -7,48 +7,43 @@ namespace OffersSearchApp
 {
     public partial class FormAddOffer : Form
     {
-        private readonly MySqlConnection dbConnection;
+        private readonly string connStr;
 
-        public FormAddOffer(MySqlConnection connection)
+        public FormAddOffer(string connectionString)
         {
             InitializeComponent();
-            dbConnection = connection;
-            btnSave.Click += BtnSave_Click;
-            btnCancel.Click += BtnCancel_Click;
+            connStr = connectionString;
         }
 
-        private int GetNextOfferId()
+        private int GetNextOfferId(MySqlConnection conn)
         {
             string query = "SELECT MAX(OfferID) FROM Offers";
-            using (MySqlCommand cmd = new MySqlCommand(query, dbConnection))
-            {
-                var result = cmd.ExecuteScalar();
-                if (result != DBNull.Value && result != null)
-                    return Convert.ToInt32(result) + 1;
-                else
-                    return 1;
-            }
+
+            using var cmd = new MySqlCommand(query, conn);
+            var result = cmd.ExecuteScalar();
+
+            return (result != DBNull.Value && result != null)
+                ? Convert.ToInt32(result) + 1
+                : 1;
         }
-         
+
         private void BtnSave_Click(object sender, EventArgs e)
         {
             if (!ValidateFields()) return;
 
             try
             {
-                // 1. فتح الاتصال مرة واحدة هنا
-                if (dbConnection.State != ConnectionState.Open)
-                    dbConnection.Open();
+                using var conn = new MySqlConnection(connStr);
+                conn.Open();
 
-                // 2. جلب الرقم التالي (تأكد من إزالة Open/Close من داخل دالة GetNextOfferId)
-                int nextId = GetNextOfferId();
+                int nextId = GetNextOfferId(conn);
 
                 string query = @"INSERT INTO Offers
                         (OfferID, ProductName, SupplierName, Contact, Country, Quantity, Price, Material, Size, Type, Quarter)
                         VALUES
                         (@OfferID, @ProductName, @SupplierName, @Contact, @Country, @Quantity, @Price, @Material, @Size, @Type, @Quarter)";
 
-                using (MySqlCommand cmd = new MySqlCommand(query, dbConnection))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@OfferID", nextId);
                     cmd.Parameters.AddWithValue("@ProductName", tbProductName.Text.Trim());
@@ -62,22 +57,15 @@ namespace OffersSearchApp
                     cmd.Parameters.AddWithValue("@Type", string.IsNullOrWhiteSpace(tbType.Text) ? DBNull.Value : tbType.Text.Trim());
                     cmd.Parameters.AddWithValue("@Quarter", string.IsNullOrWhiteSpace(tbQuarter.Text) ? DBNull.Value : tbQuarter.Text.Trim());
 
-                    cmd.ExecuteNonQuery(); // الآن سيعمل لأن الاتصال مفتوح
+                    cmd.ExecuteNonQuery(); 
                 }
 
-                MessageBox.Show("تم حفظ العرض بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
+                MessageBox.Show("تم حفظ العرض بنجاح!");
                 Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("خطأ في قاعدة البيانات:\n" + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // 3. الإغلاق النهائي يكون هنا فقط
-                if (dbConnection.State == ConnectionState.Open)
-                    dbConnection.Close();
             }
         }
 

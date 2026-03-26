@@ -25,14 +25,17 @@
             recordsCountLabel = new Label();
             Panel_recordsCount = new Panel();
             panel1 = new Panel();
-            cbQuarter = new ComboBox();
-            btnWordReport = new Button();
             btnMenu = new Button();
             btnDeleteAll = new Button();
+            groupBox2 = new GroupBox();
+            BtnDeleteOffer = new Button();
+            btnAddOffer = new Button();
+            btnEditOffer = new Button();
+            groupBox1 = new GroupBox();
             btnImportExcel = new Button();
+            cbQuarter = new ComboBox();
             btnExportExcel = new Button();
-            btnRefresh = new Button();
-            btnAddSupplier = new Button();
+            btnWordReport = new Button();
             searchPanelFlow = new FlowLayoutPanel();
             panel_ProductName = new Panel();
             tb_ProductName = new TextBox();
@@ -59,6 +62,8 @@
             offersGrid = new DataGridView();
             Panel_recordsCount.SuspendLayout();
             panel1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
             searchPanelFlow.SuspendLayout();
             panel_ProductName.SuspendLayout();
             panel_SupplierName.SuspendLayout();
@@ -94,14 +99,10 @@
             // panel1
             // 
             panel1.BackColor = Color.AliceBlue;
-            panel1.Controls.Add(cbQuarter);
-            panel1.Controls.Add(btnWordReport);
             panel1.Controls.Add(btnMenu);
             panel1.Controls.Add(btnDeleteAll);
-            panel1.Controls.Add(btnImportExcel);
-            panel1.Controls.Add(btnExportExcel);
-            panel1.Controls.Add(btnRefresh);
-            panel1.Controls.Add(btnAddSupplier);
+            panel1.Controls.Add(groupBox2);
+            panel1.Controls.Add(groupBox1);
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(10, 10);
             panel1.MaximumSize = new Size(160, 0);
@@ -109,31 +110,6 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(40, 716);
             panel1.TabIndex = 11;
-            // 
-            // cbQuarter
-            // 
-            cbQuarter.FormattingEnabled = true;
-            cbQuarter.Items.AddRange(new object[] { "Q1", "Q2", "Q3", "Q4" });
-            cbQuarter.Location = new Point(10, 280);
-            cbQuarter.Name = "cbQuarter";
-            cbQuarter.Size = new Size(130, 23);
-            cbQuarter.TabIndex = 6;
-            cbQuarter.Visible = false;
-            // 
-            // btnWordReport
-            // 
-            btnWordReport.AutoSize = true;
-            btnWordReport.BackColor = Color.Gray;
-            btnWordReport.FlatStyle = FlatStyle.Flat;
-            btnWordReport.ForeColor = Color.White;
-            btnWordReport.Location = new Point(10, 240);
-            btnWordReport.Name = "btnWordReport";
-            btnWordReport.Size = new Size(130, 30);
-            btnWordReport.TabIndex = 6;
-            btnWordReport.Text = "Word Report";
-            btnWordReport.UseVisualStyleBackColor = false;
-            btnWordReport.Visible = false;
-            btnWordReport.Click += btnWordReport_Click;
             // 
             // btnMenu
             // 
@@ -148,20 +124,91 @@
             btnMenu.TabIndex = 4;
             btnMenu.Text = "☰";
             btnMenu.UseVisualStyleBackColor = false;
+            btnMenu.Click += BtnMenu_Click;
             // 
             // btnDeleteAll
             // 
             btnDeleteAll.AutoSize = true;
-            btnDeleteAll.BackColor = Color.FromArgb(231, 76, 60);
+            btnDeleteAll.BackColor = Color.Crimson;
             btnDeleteAll.FlatStyle = FlatStyle.Flat;
             btnDeleteAll.ForeColor = Color.White;
-            btnDeleteAll.Location = new Point(10, 360);
+            btnDeleteAll.Location = new Point(10, 466);
             btnDeleteAll.Name = "btnDeleteAll";
             btnDeleteAll.Size = new Size(130, 30);
             btnDeleteAll.TabIndex = 1;
             btnDeleteAll.Text = "Delete All";
             btnDeleteAll.UseVisualStyleBackColor = false;
             btnDeleteAll.Visible = false;
+            btnDeleteAll.Click += BtnDeleteAll_Click;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(BtnDeleteOffer);
+            groupBox2.Controls.Add(btnAddOffer);
+            groupBox2.Controls.Add(btnEditOffer);
+            groupBox2.Location = new Point(0, 120);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(150, 140);
+            groupBox2.TabIndex = 9;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Offers Management";
+            groupBox2.Visible = false;
+            // 
+            // BtnDeleteOffer
+            // 
+            BtnDeleteOffer.AutoSize = true;
+            BtnDeleteOffer.BackColor = Color.Crimson;
+            BtnDeleteOffer.FlatStyle = FlatStyle.Flat;
+            BtnDeleteOffer.ForeColor = Color.White;
+            BtnDeleteOffer.Location = new Point(10, 100);
+            BtnDeleteOffer.Name = "BtnDeleteOffer";
+            BtnDeleteOffer.Size = new Size(130, 30);
+            BtnDeleteOffer.TabIndex = 7;
+            BtnDeleteOffer.Text = "Delete Offer";
+            BtnDeleteOffer.UseVisualStyleBackColor = false;
+            BtnDeleteOffer.Click += BtnDeleteOffer_Click;
+            // 
+            // btnAddOffer
+            // 
+            btnAddOffer.AutoSize = true;
+            btnAddOffer.BackColor = Color.FromArgb(52, 152, 219);
+            btnAddOffer.FlatStyle = FlatStyle.Flat;
+            btnAddOffer.ForeColor = Color.White;
+            btnAddOffer.Location = new Point(10, 20);
+            btnAddOffer.Name = "btnAddOffer";
+            btnAddOffer.Size = new Size(130, 30);
+            btnAddOffer.TabIndex = 2;
+            btnAddOffer.Text = "Add Offer";
+            btnAddOffer.UseVisualStyleBackColor = false;
+            btnAddOffer.Click += BtnAddSupplier_Click;
+            // 
+            // btnEditOffer
+            // 
+            btnEditOffer.AutoSize = true;
+            btnEditOffer.BackColor = Color.FromArgb(52, 152, 219);
+            btnEditOffer.FlatStyle = FlatStyle.Flat;
+            btnEditOffer.ForeColor = Color.White;
+            btnEditOffer.Location = new Point(10, 60);
+            btnEditOffer.Name = "btnEditOffer";
+            btnEditOffer.Size = new Size(130, 30);
+            btnEditOffer.TabIndex = 0;
+            btnEditOffer.Text = "Edit Offer";
+            btnEditOffer.UseVisualStyleBackColor = false;
+            btnEditOffer.Click += BtnEditOffer_Click;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(btnImportExcel);
+            groupBox1.Controls.Add(cbQuarter);
+            groupBox1.Controls.Add(btnExportExcel);
+            groupBox1.Controls.Add(btnWordReport);
+            groupBox1.Location = new Point(0, 276);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(150, 175);
+            groupBox1.TabIndex = 8;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Display and Export Data";
+            groupBox1.Visible = false;
             // 
             // btnImportExcel
             // 
@@ -169,13 +216,24 @@
             btnImportExcel.BackColor = Color.SeaGreen;
             btnImportExcel.FlatStyle = FlatStyle.Flat;
             btnImportExcel.ForeColor = Color.White;
-            btnImportExcel.Location = new Point(10, 120);
+            btnImportExcel.Location = new Point(10, 20);
             btnImportExcel.Name = "btnImportExcel";
             btnImportExcel.Size = new Size(130, 30);
             btnImportExcel.TabIndex = 3;
             btnImportExcel.Text = "Import from Excel";
             btnImportExcel.UseVisualStyleBackColor = false;
-            btnImportExcel.Visible = false;
+            btnImportExcel.Click += BtnImportExcel_Click;
+            // 
+            // cbQuarter
+            // 
+            cbQuarter.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            cbQuarter.FormattingEnabled = true;
+            cbQuarter.Items.AddRange(new object[] { "Q1", "Q2", "Q3", "Q4" });
+            cbQuarter.Location = new Point(10, 140);
+            cbQuarter.Name = "cbQuarter";
+            cbQuarter.Size = new Size(130, 23);
+            cbQuarter.TabIndex = 6;
+            cbQuarter.Text = "Quarter";
             // 
             // btnExportExcel
             // 
@@ -183,42 +241,27 @@
             btnExportExcel.BackColor = Color.SeaGreen;
             btnExportExcel.FlatStyle = FlatStyle.Flat;
             btnExportExcel.ForeColor = Color.White;
-            btnExportExcel.Location = new Point(10, 160);
+            btnExportExcel.Location = new Point(10, 60);
             btnExportExcel.Name = "btnExportExcel";
             btnExportExcel.Size = new Size(130, 30);
             btnExportExcel.TabIndex = 5;
             btnExportExcel.Text = "Expor To Excel";
             btnExportExcel.UseVisualStyleBackColor = false;
-            btnExportExcel.Visible = false;
-            btnExportExcel.Click += btnExportExcel_Click;
+            btnExportExcel.Click += BtnExportExcel_Click;
             // 
-            // btnRefresh
+            // btnWordReport
             // 
-            btnRefresh.AutoSize = true;
-            btnRefresh.BackColor = Color.FromArgb(52, 152, 219);
-            btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.ForeColor = Color.White;
-            btnRefresh.Location = new Point(10, 320);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(130, 30);
-            btnRefresh.TabIndex = 0;
-            btnRefresh.Text = "Update date";
-            btnRefresh.UseVisualStyleBackColor = false;
-            btnRefresh.Visible = false;
-            // 
-            // btnAddSupplier
-            // 
-            btnAddSupplier.AutoSize = true;
-            btnAddSupplier.BackColor = Color.SteelBlue;
-            btnAddSupplier.FlatStyle = FlatStyle.Flat;
-            btnAddSupplier.ForeColor = Color.White;
-            btnAddSupplier.Location = new Point(10, 200);
-            btnAddSupplier.Name = "btnAddSupplier";
-            btnAddSupplier.Size = new Size(130, 30);
-            btnAddSupplier.TabIndex = 2;
-            btnAddSupplier.Text = "Add supplier";
-            btnAddSupplier.UseVisualStyleBackColor = false;
-            btnAddSupplier.Visible = false;
+            btnWordReport.AutoSize = true;
+            btnWordReport.BackColor = Color.FromArgb(41, 85, 152);
+            btnWordReport.FlatStyle = FlatStyle.Flat;
+            btnWordReport.ForeColor = Color.White;
+            btnWordReport.Location = new Point(10, 100);
+            btnWordReport.Name = "btnWordReport";
+            btnWordReport.Size = new Size(130, 30);
+            btnWordReport.TabIndex = 6;
+            btnWordReport.Text = "Word Report";
+            btnWordReport.UseVisualStyleBackColor = false;
+            btnWordReport.Click += BtnWordReport_Click;
             // 
             // searchPanelFlow
             // 
@@ -485,7 +528,7 @@
             offersGrid.ScrollBars = ScrollBars.Vertical;
             offersGrid.SelectionMode = DataGridViewSelectionMode.CellSelect;
             offersGrid.Size = new Size(1414, 596);
-            offersGrid.TabIndex = 10;
+            offersGrid.TabIndex = 14;
             // 
             // Form1
             // 
@@ -504,6 +547,10 @@
             Panel_recordsCount.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             searchPanelFlow.ResumeLayout(false);
             searchPanelFlow.PerformLayout();
             panel_ProductName.ResumeLayout(false);
@@ -527,9 +574,9 @@
         protected Label recordsCountLabel;
         private Panel Panel_recordsCount;
         private Panel panel1;
-        private Button btnRefresh;
+        private Button btnEditOffer;
         private Button btnDeleteAll;
-        private Button btnAddSupplier;
+        private Button btnAddOffer;
         private Button btnImportExcel;
         private FlowLayoutPanel searchPanelFlow;
         private Panel panel_ProductName;
@@ -554,9 +601,12 @@
         private TextBox tb_Quarter;
         private Label lbl_Quarter;
         private Button btnClearSearch;
-        private DataGridView offersGrid;
         private Button btnExportExcel;
         private ComboBox cbQuarter;
         private Button btnWordReport;
+        private DataGridView offersGrid;
+        private Button BtnDeleteOffer;
+        private GroupBox groupBox1;
+        private GroupBox groupBox2;
     }
 }
