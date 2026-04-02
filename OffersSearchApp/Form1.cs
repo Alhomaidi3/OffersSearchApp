@@ -19,7 +19,6 @@ namespace OffersSearchApp
         {
             InitializeComponent();
 
-            // تفعيل البحث لكل TextBox
             foreach (var col in searchColumns)
             {
                 var tb = Controls.Find("tb_" + col, true);
@@ -54,7 +53,8 @@ namespace OffersSearchApp
 
                 offersView = new DataView(offersTable);
                 offersGrid.DataSource = offersView;
-
+                SetColumnWidths();
+                SetColumnAlignment();
                 UpdateRecordsCount();
             }
             catch (Exception ex)
@@ -112,12 +112,18 @@ namespace OffersSearchApp
                 MessageBox.Show("خطأ أثناء الاستيراد: " + ex.Message);
             }
         }
-
-        private void BtnAddSupplier_Click(object? sender, EventArgs e)
+        private void BtnAddItem_Click(object sender, EventArgs e)
         {
-            using var form = new FormAddOffer(connStr);
-            if (form.ShowDialog() == DialogResult.OK)
+            this.Hide();
+
+            using var form = new FormAddItem(connStr);
+            form.ShowDialog();
+
+            this.Show();
+
+            if (form.IsSaved)
                 LoadData();
+
         }
 
         private void BtnExportExcel_Click(object? sender, EventArgs e)
@@ -147,41 +153,44 @@ namespace OffersSearchApp
 
         private void BtnEditOffer_Click(object sender, EventArgs e)
         {
-            if (offersGrid.CurrentCell == null)
+            if (offersGrid.CurrentRow == null)
             {
                 MessageBox.Show("الرجاء اختيار العرض الذي تريد تعديله من الجدول.");
                 return;
             }
 
-            if (!int.TryParse(offersGrid.CurrentCell.Value?.ToString(), out int offerId))
+            // Get the ProductName from the selected row
+            string productName = offersGrid.CurrentRow.Cells["ProductName"].Value?.ToString();
+            if (string.IsNullOrEmpty(productName))
             {
-                MessageBox.Show("الخلية المحددة لا تحتوي على رقم صالح للعرض.");
+                MessageBox.Show("الرجاء اختيار عرض يحتوي على اسم منتج صالح.");
                 return;
             }
+            this.Hide();
 
-            using var editForm = new FormEditOffer(connStr, offerId);
+            using var editForm = new FormAddItem(connStr, productName);
             editForm.ShowDialog();
+            this.Show();
 
             if (editForm.IsSaved)
             {
                 LoadData();
-                MessageBox.Show("تم تعديل العرض بنجاح!");
             }
         }
-
         private void BtnDeleteOffer_Click(object sender, EventArgs e)
         {
-            if (offersGrid.CurrentCell == null)
+            if (offersGrid.CurrentRow == null)
             {
                 MessageBox.Show("الرجاء اختيار العرض الذي تريد حذفه من الجدول.");
                 return;
             }
 
-            if (!int.TryParse(offersGrid.CurrentCell.Value?.ToString(), out int offerId))
+            if (!int.TryParse(offersGrid.CurrentRow.Cells["OfferID"].Value.ToString(), out int offerId))
             {
-                MessageBox.Show("الخلية المحددة لا تحتوي على رقم صالح للعرض.");
+                MessageBox.Show("رقم العرض غير صالح.");
                 return;
             }
+
 
             var result = MessageBox.Show("هل أنت متأكد أنك تريد حذف هذا العرض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -226,12 +235,12 @@ namespace OffersSearchApp
             {
                 if (c is GroupBox groupBox)
                 {
-                    groupBox.Visible = isExpanded;  
+                    groupBox.Visible = isExpanded;
                 }
 
                 if (c is Button button && button != btnMenu)
                 {
-                    button.Visible = isExpanded;  
+                    button.Visible = isExpanded;
                 }
 
             }
@@ -292,7 +301,35 @@ namespace OffersSearchApp
                     textBox.Text = "";
             }
         }
+        private void SetColumnWidths()
+        {
+            offersGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+            offersGrid.Columns["OfferID"].FillWeight = 6;
+            offersGrid.Columns["ProductName"].FillWeight = 10;
+            offersGrid.Columns["SupplierName"].FillWeight = 20;
+            offersGrid.Columns["Contact"].FillWeight = 10;
+            offersGrid.Columns["Country"].FillWeight = 7;
+            offersGrid.Columns["Quantity"].FillWeight = 7;
+            offersGrid.Columns["Price"].FillWeight = 7;
+            offersGrid.Columns["Material"].FillWeight = 10;
+            offersGrid.Columns["Size"].FillWeight = 10;
+            offersGrid.Columns["Type"].FillWeight = 7;
+            offersGrid.Columns["Quarter"].FillWeight = 6;
+        }
+
+        private void SetColumnAlignment()
+        {
+            foreach (DataGridViewColumn col in offersGrid.Columns)
+            {
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            if (offersGrid.Columns["SupplierName"] != null)
+            {
+                offersGrid.Columns["SupplierName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            }
+        }
         private void UpdateRecordsCount()
         {
             if (recordsCountLabel != null && offersView != null && offersTable != null)
