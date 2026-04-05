@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OffersSearchApp
 {
-    public partial class Form1 : Form
+    public partial class Form1 : BaseThemeForm
     {
         private DataView? offersView;
         private DataTable? offersTable;
@@ -117,9 +117,12 @@ namespace OffersSearchApp
             this.Hide();
 
             using var form = new FormAddItem(connStr);
+            form.ParentWindowState = this.WindowState;
             form.ShowDialog();
 
             this.Show();
+
+            this.WindowState = form.ParentWindowState;
 
             if (form.IsSaved)
                 LoadData();
@@ -169,9 +172,11 @@ namespace OffersSearchApp
             this.Hide();
 
             using var editForm = new FormAddItem(connStr, productName);
+            editForm.ParentWindowState = this.WindowState;
             editForm.ShowDialog();
             this.Show();
 
+            this.WindowState = editForm.ParentWindowState;
             if (editForm.IsSaved)
             {
                 LoadData();
@@ -216,22 +221,32 @@ namespace OffersSearchApp
                 }
             }
         }
+        private void BtnToggleTheme_Click(object? sender, EventArgs e)
+        {
+            ThemeManager.ToggleTheme();
+        }
 
         private bool isExpanded = false;
+
         private void BtnMenu_Click(object? sender, EventArgs e)
         {
             if (isExpanded)
             {
-                panel1.Width = panel1.MinimumSize.Width;
+                // تصغير حجم الـ Sidebar
+                mainLayout.ColumnStyles[0].Width = 40; // الحجم المصغر
+                panelSidebar.MinimumSize = new Size(40, 0);
                 isExpanded = false;
             }
             else
             {
-                panel1.Width = panel1.MaximumSize.Width;
+                // تكبير حجم الـ Sidebar
+                mainLayout.ColumnStyles[0].Width = 160; // الحجم الأصلي
+                panelSidebar.MinimumSize = new Size(160, 0);
                 isExpanded = true;
             }
 
-            foreach (Control c in panel1.Controls)
+            // إخفاء/إظهار المحتويات داخل الـ Sidebar
+            foreach (Control c in panelSidebar.Controls)
             {
                 if (c is GroupBox groupBox)
                 {
@@ -242,8 +257,10 @@ namespace OffersSearchApp
                 {
                     button.Visible = isExpanded;
                 }
-
             }
+
+            // فرض إعادة التخطيط
+            mainLayout.PerformLayout();
         }
         #endregion
 
@@ -317,7 +334,6 @@ namespace OffersSearchApp
             offersGrid.Columns["Type"].FillWeight = 7;
             offersGrid.Columns["Quarter"].FillWeight = 6;
         }
-
         private void SetColumnAlignment()
         {
             foreach (DataGridViewColumn col in offersGrid.Columns)
@@ -338,5 +354,28 @@ namespace OffersSearchApp
 
         #endregion
 
+        private void offersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || offersGrid.Rows[e.RowIndex].IsNewRow)
+            {
+                MessageBox.Show("الرجاء اختيار عرض صالح من الجدول.");
+                return;
+            }
+
+            string productName = offersGrid.Rows[e.RowIndex].Cells["ProductName"].Value?.ToString();
+
+            this.Hide();
+
+            using var editForm = new FormAddItem(connStr, productName);
+            editForm.ParentWindowState = this.WindowState;
+            editForm.ShowDialog();
+            this.Show();
+
+            this.WindowState = editForm.ParentWindowState;
+            if (editForm.IsSaved)
+            {
+                LoadData();
+            }
+        }
     }
 }

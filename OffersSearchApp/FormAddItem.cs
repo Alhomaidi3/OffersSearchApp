@@ -6,12 +6,13 @@ using MySql.Data.MySqlClient;
 
 namespace OffersSearchApp
 {
-    public partial class FormAddItem : Form
+    public partial class FormAddItem : BaseThemeForm
     {
         private readonly string connStr;
         private readonly string productNameForEdit;
         private DataTable offersTable;
         private bool isSaved = false;
+        public FormWindowState ParentWindowState { get; set; } = FormWindowState.Normal;
 
         public bool IsSaved => isSaved;
 
@@ -36,6 +37,11 @@ namespace OffersSearchApp
                 lblTitle.ForeColor = Color.SeaGreen;
             }
         }
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            this.WindowState = ParentWindowState;
+        }
 
         private void LoadData()
         {
@@ -47,9 +53,7 @@ namespace OffersSearchApp
                 {
                     using var conn = new MySqlConnection(connStr);
                     conn.Open();
-                    string query = @"SELECT OfferID, ProductName, SupplierName, Contact, Country, 
-                                            Quantity, Price, Material, Size, Type, Quarter 
-                                     FROM Offers 
+                    string query = @"SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter FROM offers 
                                      WHERE ProductName = @ProductName
                                      ORDER BY OfferID";
 
@@ -85,6 +89,54 @@ namespace OffersSearchApp
             if (string.IsNullOrEmpty(productNameForEdit))
             {
                 AddNewEmptyRow();
+            }
+        }
+
+        private void DgvOffers_DragEnter(object? sender, DragEventArgs e)
+        {
+            // السماح بنسخ النص
+            if (e.Data!.GetDataPresent(DataFormats.Text) ||
+                e.Data.GetDataPresent(DataFormats.UnicodeText) ||
+                e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void DgvOffers_DragDrop(object? sender, DragEventArgs e)
+        {
+            // الحصول على النص المسحوب
+            string? draggedText = e.Data?.GetData(DataFormats.UnicodeText)?.ToString()
+                                  ?? e.Data?.GetData(DataFormats.StringFormat)?.ToString()
+                                  ?? e.Data?.GetData(DataFormats.Text)?.ToString();
+
+            if (string.IsNullOrEmpty(draggedText))
+                return;
+
+            // تحديد موقع الإفلات
+            Point clientPoint = dgvOffers.PointToClient(new Point(e.X, e.Y));
+            var hitTest = dgvOffers.HitTest(clientPoint.X, clientPoint.Y);
+
+            if (hitTest.RowIndex >= 0 && hitTest.ColumnIndex >= 0)
+            {
+                // إفلات النص في الخلية المحددة
+                dgvOffers.Rows[hitTest.RowIndex].Cells[hitTest.ColumnIndex].Value = draggedText;
+            }
+            else if (hitTest.RowIndex >= 0)
+            {
+                // إفلات في صف ولكن خارج الأعمدة (يضعه في العمود الأول)
+                dgvOffers.Rows[hitTest.RowIndex].Cells[0].Value = draggedText;
+            }
+            else
+            {
+                // إفلات خارج الجدول - إضافة صف جديد
+                AddNewEmptyRow();
+                int lastRow = dgvOffers.Rows.Count - 1;
+                dgvOffers.Rows[lastRow].Cells[0].Value = draggedText;
             }
         }
 
@@ -155,9 +207,9 @@ namespace OffersSearchApp
                     {
                         int nextId = GetNextOfferId(conn);
                         string insertQuery = @"INSERT INTO Offers
-                            (OfferID, ProductName, SupplierName, Contact, Country, Quantity, Price, Material, Size, Type, Quarter)
-                            VALUES
-                            (@OfferID, @ProductName, @SupplierName, @Contact, @Country, @Quantity, @Price, @Material, @Size, @Type, @Quarter)";
+                                (OfferID, ProductName, SupplierName, Contact, Country, Quantity, Price, Material, Size, Type, Quarter)
+                                VALUES
+                                (@OfferID, @ProductName, @SupplierName, @Contact, @Country, @Quantity, @Price, @Material, @Size, @Type, @Quarter)";
 
                         using var cmd = new MySqlCommand(insertQuery, conn);
                         cmd.Parameters.AddWithValue("@OfferID", nextId);
@@ -178,17 +230,17 @@ namespace OffersSearchApp
                     else
                     {
                         string updateQuery = @"UPDATE Offers SET
-                            ProductName = @ProductName,
-                            SupplierName = @SupplierName,
-                            Contact = @Contact,
-                            Country = @Country,
-                            Quantity = @Quantity,
-                            Price = @Price,
-                            Material = @Material,
-                            Size = @Size,
-                            Type = @Type,
-                            Quarter = @Quarter
-                            WHERE OfferID = @OfferID";
+                                ProductName = @ProductName,
+                                SupplierName = @SupplierName,
+                                Contact = @Contact,
+                                Country = @Country,
+                                Quantity = @Quantity,
+                                Price = @Price,
+                                Material = @Material,
+                                Size = @Size,
+                                Type = @Type,
+                                Quarter = @Quarter
+                                WHERE OfferID = @OfferID";
 
                         using var cmd = new MySqlCommand(updateQuery, conn);
                         cmd.Parameters.AddWithValue("@OfferID", offerId);
@@ -211,7 +263,6 @@ namespace OffersSearchApp
                 isSaved = true;
                 string message = $"📝 تم إضافة {insertedCount} عرض جديد.\n✏️ تم تحديث {updatedCount} عرض.";
                 MessageBox.Show(message, "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Close();
             }
             catch (Exception ex)
             {
@@ -219,7 +270,6 @@ namespace OffersSearchApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private int GetNextOfferId(MySqlConnection conn)
         {
             string query = "SELECT MAX(OfferID) FROM Offers";
@@ -227,7 +277,6 @@ namespace OffersSearchApp
             var result = cmd.ExecuteScalar();
             return (result != DBNull.Value && result != null) ? Convert.ToInt32(result) + 1 : 1;
         }
-
         private object GetValueOrNull(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -235,7 +284,6 @@ namespace OffersSearchApp
             string str = value.ToString().Trim();
             return string.IsNullOrEmpty(str) ? DBNull.Value : str;
         }
-
         private object ParseNullableInt(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -248,7 +296,7 @@ namespace OffersSearchApp
         {
             if (e.KeyCode == Keys.Enter)
             {
-                e.SuppressKeyPress = true; 
+                e.SuppressKeyPress = true;
 
                 var currentCell = dgvOffers.CurrentCell;
                 if (currentCell == null) return;
@@ -279,17 +327,17 @@ namespace OffersSearchApp
         {
             dgvOffers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            dgvOffers.Columns["OfferID"].FillWeight = 4;      
-            dgvOffers.Columns["ProductName"].FillWeight = 10; 
-            dgvOffers.Columns["SupplierName"].FillWeight = 20; 
-            dgvOffers.Columns["Contact"].FillWeight = 10;     
-            dgvOffers.Columns["Country"].FillWeight = 8;       
-            dgvOffers.Columns["Quantity"].FillWeight = 8;      
-            dgvOffers.Columns["Price"].FillWeight = 8;      
-            dgvOffers.Columns["Material"].FillWeight = 10;    
-            dgvOffers.Columns["Size"].FillWeight = 10;         
-            dgvOffers.Columns["Type"].FillWeight = 8;        
-            dgvOffers.Columns["Quarter"].FillWeight = 4;      
+            dgvOffers.Columns["OfferID"].FillWeight = 4;
+            dgvOffers.Columns["ProductName"].FillWeight = 10;
+            dgvOffers.Columns["SupplierName"].FillWeight = 20;
+            dgvOffers.Columns["Contact"].FillWeight = 10;
+            dgvOffers.Columns["Country"].FillWeight = 8;
+            dgvOffers.Columns["Quantity"].FillWeight = 8;
+            dgvOffers.Columns["Price"].FillWeight = 8;
+            dgvOffers.Columns["Material"].FillWeight = 10;
+            dgvOffers.Columns["Size"].FillWeight = 10;
+            dgvOffers.Columns["Type"].FillWeight = 8;
+            dgvOffers.Columns["Quarter"].FillWeight = 4;
         }
         private void SetColumnAlignment()
         {
@@ -311,10 +359,13 @@ namespace OffersSearchApp
                 return result;
             return DBNull.Value;
         }
-
         private void BtnCancel_Click(object sender, EventArgs e)
         {
             Close();
+        }
+        private void BtnToggleTheme_Click(object? sender, EventArgs e)
+        {
+            ThemeManager.ToggleTheme();
         }
     }
 }
