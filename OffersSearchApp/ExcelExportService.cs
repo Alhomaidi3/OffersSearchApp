@@ -12,14 +12,14 @@ namespace OffersSearchApp
         {
             if (dataView == null || dataView.Count == 0 || dataView.Table == null || dataView.Table.Columns.Count == 0)
             {
-                MessageBox.Show("لا توجد بيانات للتصدير!");
+                MessageBox.Show("No data available for export!");
                 return;
             }
 
             using var sfd = new SaveFileDialog
             {
                 Filter = "CSV File|*.csv",
-                Title = "حفظ الملف",
+                Title = "Save File",
                 FileName = fileTitle + ".csv"
             };
 
@@ -61,11 +61,11 @@ namespace OffersSearchApp
 
                 File.WriteAllText(sfd.FileName, sb.ToString(), Encoding.UTF8);
 
-                MessageBox.Show("تم تصدير البيانات بنجاح!");
+                MessageBox.Show("Data exported successfully!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حدث خطأ أثناء التصدير: " + ex.Message);
+                MessageBox.Show("Error occurred during export: " + ex.Message);
             }
         }
     }

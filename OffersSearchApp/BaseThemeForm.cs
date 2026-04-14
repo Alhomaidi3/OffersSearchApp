@@ -91,6 +91,9 @@ namespace OffersSearchApp
                 case "btnDeleteAll":
                     button.BackColor = ThemeManager.DeleteAllButtonColor;
                     break;
+                case "BtnDeleteSupplier":
+                    button.BackColor = ThemeManager.DeleteAllButtonColor;
+                    break;
                 case "btnClearSearch":
                     button.BackColor = ThemeManager.ClearSearchButtonColor;
                     break;
@@ -120,6 +123,9 @@ namespace OffersSearchApp
                     break;
                 case "btnToggleTheme":
                     button.BackColor = ThemeManager.ToggleThemeButtonColor;
+                    break;
+                case "btnToggleSelect":  
+                    button.BackColor = ThemeManager.ToggleSelectButtonColor;  // ستضيف هذه الخاصية لاحقاً
                     break;
                 default:
                     button.BackColor = ThemeManager.CurrentButtonBackColor;

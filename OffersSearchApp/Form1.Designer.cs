@@ -21,6 +21,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             mainLayout = new TableLayoutPanel();
             panelSidebar = new Panel();
+            btnOpenSuppliers = new Button();
             btnToggleTheme = new Button();
             btnMenu = new Button();
             btnDeleteAll = new Button();
@@ -99,6 +100,7 @@
             // panelSidebar
             // 
             panelSidebar.BackColor = Color.AliceBlue;
+            panelSidebar.Controls.Add(btnOpenSuppliers);
             panelSidebar.Controls.Add(btnToggleTheme);
             panelSidebar.Controls.Add(btnMenu);
             panelSidebar.Controls.Add(btnDeleteAll);
@@ -111,6 +113,21 @@
             mainLayout.SetRowSpan(panelSidebar, 3);
             panelSidebar.Size = new Size(40, 730);
             panelSidebar.TabIndex = 0;
+            // 
+            // btnOpenSuppliers
+            // 
+            btnOpenSuppliers.AutoSize = true;
+            btnOpenSuppliers.BackColor = SystemColors.ControlDark;
+            btnOpenSuppliers.FlatStyle = FlatStyle.Flat;
+            btnOpenSuppliers.ForeColor = Color.White;
+            btnOpenSuppliers.Location = new Point(12, 536);
+            btnOpenSuppliers.Name = "btnOpenSuppliers";
+            btnOpenSuppliers.Size = new Size(135, 30);
+            btnOpenSuppliers.TabIndex = 11;
+            btnOpenSuppliers.Text = "Suppliers Managment";
+            btnOpenSuppliers.UseVisualStyleBackColor = false;
+            btnOpenSuppliers.Visible = false;
+            btnOpenSuppliers.Click += btnOpenSuppliers_Click_1;
             // 
             // btnToggleTheme
             // 
@@ -506,7 +523,7 @@
             btnClearSearch.Name = "btnClearSearch";
             btnClearSearch.Size = new Size(132, 27);
             btnClearSearch.TabIndex = 2;
-            btnClearSearch.Text = "\U0001f9f9 مسح البحث";
+            btnClearSearch.Text = "\U0001f9f9 Clear Search";
             btnClearSearch.UseVisualStyleBackColor = false;
             // 
             // offersGrid
@@ -646,5 +663,6 @@
         private Panel Panel_recordsCount;
         private Label recordsCountLabel;
         private Button btnToggleTheme;
+        private Button btnOpenSuppliers;
     }
 }

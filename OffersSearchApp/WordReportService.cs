@@ -12,7 +12,7 @@ namespace OffersSearchApp
         {
             if (offersTable == null || offersTable.Rows.Count == 0)
             {
-                MessageBox.Show("لا توجد بيانات لإنشاء التقرير!");
+                MessageBox.Show("No data available to generate the report!");
                 return;
             }
 
@@ -23,7 +23,7 @@ namespace OffersSearchApp
 
             if (data.Count == 0)
             {
-                MessageBox.Show($"لا توجد بيانات للربع {quarter}!");
+                MessageBox.Show($"No data available for quarter {quarter}!");
                 return;
             }
 
@@ -44,7 +44,7 @@ namespace OffersSearchApp
                     doc.ChangeDocumentType(WordprocessingDocumentType.Document);
                     if (doc.MainDocumentPart?.Document?.Body == null)
                     {
-                        MessageBox.Show("خطأ في بنية ملف الوورد!");
+                        MessageBox.Show("Error in Word file structure!");
                         return;
                     }
 
@@ -92,11 +92,11 @@ namespace OffersSearchApp
 
                     doc.MainDocumentPart.Document.Save();
                 }
-                MessageBox.Show("تم إنشاء التقرير بنجاح!");
+                MessageBox.Show("Report generated successfully!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ: " + ex.Message);
+                MessageBox.Show("Error " + ex.Message);
             }
         }
 
@@ -182,7 +182,7 @@ namespace OffersSearchApp
                 {
                     var validPrices = g.Where(x => x["Price"] != DBNull.Value);
                     if (!validPrices.Any())
-                        return new { Product = g.Key, Supplier = "لا يوجد", Price = 0m };
+                        return new { Product = g.Key, Supplier = "Not Available", Price = 0m };
 
                     var min = validPrices.OrderBy(x => Convert.ToDecimal(x["Price"])).First();
                     return new

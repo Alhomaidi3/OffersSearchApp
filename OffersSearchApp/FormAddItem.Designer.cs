@@ -21,6 +21,7 @@ namespace OffersSearchApp
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAddItem));
             buttonsFlow = new FlowLayoutPanel();
             btnToggleTheme = new Button();
+            btnToggleSelect = new Button();
             btnCancel = new Button();
             btnSave = new Button();
             dgvOffers = new DataGridView();
@@ -38,11 +39,12 @@ namespace OffersSearchApp
             buttonsFlow.Anchor = AnchorStyles.None;
             buttonsFlow.AutoSize = true;
             buttonsFlow.Controls.Add(btnToggleTheme);
+            buttonsFlow.Controls.Add(btnToggleSelect);
             buttonsFlow.Controls.Add(btnCancel);
             buttonsFlow.Controls.Add(btnSave);
-            buttonsFlow.Location = new Point(23, 702);
+            buttonsFlow.Location = new Point(24, 702);
             buttonsFlow.Name = "buttonsFlow";
-            buttonsFlow.Size = new Size(1428, 36);
+            buttonsFlow.Size = new Size(1426, 36);
             buttonsFlow.TabIndex = 2;
             buttonsFlow.WrapContents = false;
             // 
@@ -53,7 +55,7 @@ namespace OffersSearchApp
             btnToggleTheme.FlatStyle = FlatStyle.Flat;
             btnToggleTheme.ForeColor = Color.White;
             btnToggleTheme.Location = new Point(3, 3);
-            btnToggleTheme.Margin = new Padding(3, 3, 980, 3);
+            btnToggleTheme.Margin = new Padding(3, 3, 815, 3);
             btnToggleTheme.Name = "btnToggleTheme";
             btnToggleTheme.Size = new Size(130, 27);
             btnToggleTheme.TabIndex = 11;
@@ -61,13 +63,28 @@ namespace OffersSearchApp
             btnToggleTheme.UseVisualStyleBackColor = false;
             btnToggleTheme.Click += BtnToggleTheme_Click;
             // 
+            // btnToggleSelect
+            // 
+            btnToggleSelect.AutoSize = true;
+            btnToggleSelect.BackColor = Color.FromArgb(255, 193, 7);
+            btnToggleSelect.FlatStyle = FlatStyle.Flat;
+            btnToggleSelect.ForeColor = Color.White;
+            btnToggleSelect.Location = new Point(963, 3);
+            btnToggleSelect.Margin = new Padding(15, 3, 15, 3);
+            btnToggleSelect.Name = "btnToggleSelect";
+            btnToggleSelect.Size = new Size(140, 30);
+            btnToggleSelect.TabIndex = 12;
+            btnToggleSelect.Text = "⭐ Select/Unselect";
+            btnToggleSelect.UseVisualStyleBackColor = false;
+            btnToggleSelect.Click += BtnToggleSelect_Click;
+            // 
             // btnCancel
             // 
             btnCancel.AutoSize = true;
             btnCancel.BackColor = Color.FromArgb(231, 76, 60);
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(1128, 3);
+            btnCancel.Location = new Point(1133, 3);
             btnCancel.Margin = new Padding(15, 3, 15, 3);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(130, 30);
@@ -82,8 +99,8 @@ namespace OffersSearchApp
             btnSave.BackColor = Color.SeaGreen;
             btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.ForeColor = Color.White;
-            btnSave.Location = new Point(1288, 3);
-            btnSave.Margin = new Padding(15, 3, 15, 3);
+            btnSave.Location = new Point(1293, 3);
+            btnSave.Margin = new Padding(15, 3, 3, 3);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(130, 30);
             btnSave.TabIndex = 1;
@@ -132,6 +149,7 @@ namespace OffersSearchApp
             dgvOffers.DragDrop += DgvOffers_DragDrop;
             dgvOffers.DragEnter += DgvOffers_DragEnter;
             dgvOffers.KeyDown += DgvOffers_KeyDown;
+            dgvOffers.DataBindingComplete += DgvOffers_DataBindingComplete;
             // 
             // panelTitle
             // 
@@ -202,5 +220,7 @@ namespace OffersSearchApp
         private Label lblTitle;
         private TableLayoutPanel mainLayout;
         private Button btnToggleTheme;
+        private Button btnToggleSelect;
+
     }
 }

@@ -58,10 +58,12 @@ namespace OffersSearchApp
             public static readonly Color AddOfferButton = Color.FromArgb(52, 152, 219);
             public static readonly Color EditOfferButton = Color.FromArgb(52, 152, 219);
             public static readonly Color DeleteOfferButton = Color.Crimson;
+
             public static readonly Color ImportExcelButton = Color.SeaGreen;
             public static readonly Color ExportExcelButton = Color.SeaGreen;
             public static readonly Color WordReportButton = Color.FromArgb(41, 85, 152);
             public static readonly Color ToggleThemeButton = Color.FromArgb(128, 128, 255);
+            public static readonly Color ToggleSelectButton = Color.FromArgb(255, 193, 7);
         }
 
         public static class DarkColors
@@ -89,6 +91,7 @@ namespace OffersSearchApp
             public static readonly Color ExportExcelButton = Color.FromArgb(40, 167, 69);
             public static readonly Color WordReportButton = Color.FromArgb(0, 85, 150);
             public static readonly Color ToggleThemeButton = Color.FromArgb(123, 104, 238);
+            public static readonly Color ToggleSelectButton = Color.FromArgb(255, 140, 0);
         }
 
         #endregion
@@ -105,7 +108,6 @@ namespace OffersSearchApp
         public static Color GridLineColor => IsDarkMode ? DarkColors.GridLine : LightColors.GridLine;
         public static Color GridAlternatingColor => IsDarkMode ? DarkColors.GridAlternating : LightColors.GridAlternating;
         public static Color CurrentButtonBackColor => IsDarkMode ? DarkColors.Button : LightColors.Button;
-
         public static Color DeleteAllButtonColor => IsDarkMode ? DarkColors.DeleteAllButton : LightColors.DeleteAllButton;
         public static Color ClearSearchButtonColor => IsDarkMode ? DarkColors.ClearSearchButton : LightColors.ClearSearchButton;
         public static Color SaveButtonColor => IsDarkMode ? DarkColors.SaveButton : LightColors.SaveButton;
@@ -118,6 +120,8 @@ namespace OffersSearchApp
         public static Color WordReportButtonColor => IsDarkMode ? DarkColors.WordReportButton : LightColors.WordReportButton;
         public static Color ToggleThemeButtonColor => IsDarkMode ? DarkColors.ToggleThemeButton : LightColors.ToggleThemeButton;
         public static Color SelectionBackColor => IsDarkMode ? DarkColors.SelectionBackColor : LightColors.SelectionBackColor;
+        public static Color ToggleSelectButtonColor => IsDarkMode ? DarkColors.ToggleSelectButton : LightColors.ToggleSelectButton;
+
 
 
         #endregion

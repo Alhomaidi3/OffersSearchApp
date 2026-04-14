@@ -53,18 +53,18 @@ namespace OffersSearchApp
                 {
                     using var conn = new MySqlConnection(connStr);
                     conn.Open();
-                    string query = @"SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter FROM offers 
-                                     WHERE ProductName = @ProductName
-                                     ORDER BY OfferID";
+                    string query = @"SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter, IsSelected FROM offers 
+                             WHERE ProductName LIKE @ProductName
+                             ORDER BY OfferID";
 
                     using var cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@ProductName", productNameForEdit);
+                    cmd.Parameters.AddWithValue("@ProductName", "%"+productNameForEdit+"%");
                     using var adapter = new MySqlDataAdapter(cmd);
                     adapter.Fill(offersTable);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("خطأ في تحميل البيانات: " + ex.Message, "خطأ",
+                    MessageBox.Show("Failed to load data: " + ex.Message, "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -81,20 +81,35 @@ namespace OffersSearchApp
                 offersTable.Columns.Add("Size", typeof(string));
                 offersTable.Columns.Add("Type", typeof(string));
                 offersTable.Columns.Add("Quarter", typeof(string));
+                offersTable.Columns.Add("IsSelected", typeof(bool));
             }
 
             dgvOffers.DataSource = offersTable;
-            SetColumnWidths();
-            SetColumnAlignment();
+
+            if (dgvOffers.Columns["IsSelected"] != null)
+            {
+                dgvOffers.Columns["IsSelected"].Visible = false;
+            }
+
+            ConfigureDgvOffersColumns();
+            if (dgvOffers.Columns["Price"] != null)
+            {
+                dgvOffers.Columns["Price"].DefaultCellStyle.Format = "C";
+            }
+
             if (string.IsNullOrEmpty(productNameForEdit))
             {
                 AddNewEmptyRow();
             }
         }
 
+        private void DgvOffers_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            ApplyColorsBasedOnSelection();
+        }
+
         private void DgvOffers_DragEnter(object? sender, DragEventArgs e)
         {
-            // السماح بنسخ النص
             if (e.Data!.GetDataPresent(DataFormats.Text) ||
                 e.Data.GetDataPresent(DataFormats.UnicodeText) ||
                 e.Data.GetDataPresent(DataFormats.StringFormat))
@@ -109,7 +124,6 @@ namespace OffersSearchApp
 
         private void DgvOffers_DragDrop(object? sender, DragEventArgs e)
         {
-            // الحصول على النص المسحوب
             string? draggedText = e.Data?.GetData(DataFormats.UnicodeText)?.ToString()
                                   ?? e.Data?.GetData(DataFormats.StringFormat)?.ToString()
                                   ?? e.Data?.GetData(DataFormats.Text)?.ToString();
@@ -117,7 +131,6 @@ namespace OffersSearchApp
             if (string.IsNullOrEmpty(draggedText))
                 return;
 
-            // تحديد موقع الإفلات
             Point clientPoint = dgvOffers.PointToClient(new Point(e.X, e.Y));
             var hitTest = dgvOffers.HitTest(clientPoint.X, clientPoint.Y);
 
@@ -143,6 +156,7 @@ namespace OffersSearchApp
         private void AddNewEmptyRow()
         {
             DataRow newRow = offersTable.NewRow();
+            newRow["OfferID"] = DBNull.Value;
             newRow["ProductName"] = "";
             newRow["SupplierName"] = "";
             newRow["Contact"] = "";
@@ -153,9 +167,15 @@ namespace OffersSearchApp
             newRow["Size"] = "";
             newRow["Type"] = "";
             newRow["Quarter"] = "";
+            newRow["IsSelected"] = false;
             offersTable.Rows.Add(newRow);
         }
+
         private void BtnSave_Click(object sender, EventArgs e)
+        {
+            SaveData(true);
+        }
+        private void SaveData(bool closeAfterSave)
         {
             bool hasValidRow = false;
             foreach (DataRow row in offersTable.Rows)
@@ -172,8 +192,8 @@ namespace OffersSearchApp
 
             if (!hasValidRow)
             {
-                MessageBox.Show("الرجاء إدخال اسم المنتج واسم المورد في صف واحد على الأقل.",
-                    "تحذير", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please ensure that at least one row contains both the Product Name and Supplier Name.",
+                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -207,9 +227,9 @@ namespace OffersSearchApp
                     {
                         int nextId = GetNextOfferId(conn);
                         string insertQuery = @"INSERT INTO Offers
-                                (OfferID, ProductName, SupplierName, Contact, Country, Quantity, Price, Material, Size, Type, Quarter)
-                                VALUES
-                                (@OfferID, @ProductName, @SupplierName, @Contact, @Country, @Quantity, @Price, @Material, @Size, @Type, @Quarter)";
+                        (OfferID, ProductName, SupplierName, Contact, Country, Quantity, Price, Material, Size, Type, Quarter, IsSelected)
+                        VALUES
+                        (@OfferID, @ProductName, @SupplierName, @Contact, @Country, @Quantity, @Price, @Material, @Size, @Type, @Quarter, @IsSelected)";
 
                         using var cmd = new MySqlCommand(insertQuery, conn);
                         cmd.Parameters.AddWithValue("@OfferID", nextId);
@@ -223,6 +243,7 @@ namespace OffersSearchApp
                         cmd.Parameters.AddWithValue("@Size", GetValueOrNull(row["Size"]));
                         cmd.Parameters.AddWithValue("@Type", GetValueOrNull(row["Type"]));
                         cmd.Parameters.AddWithValue("@Quarter", GetValueOrNull(row["Quarter"]));
+                        cmd.Parameters.AddWithValue("@IsSelected", false);
 
                         cmd.ExecuteNonQuery();
                         insertedCount++;
@@ -230,17 +251,17 @@ namespace OffersSearchApp
                     else
                     {
                         string updateQuery = @"UPDATE Offers SET
-                                ProductName = @ProductName,
-                                SupplierName = @SupplierName,
-                                Contact = @Contact,
-                                Country = @Country,
-                                Quantity = @Quantity,
-                                Price = @Price,
-                                Material = @Material,
-                                Size = @Size,
-                                Type = @Type,
-                                Quarter = @Quarter
-                                WHERE OfferID = @OfferID";
+                        ProductName = @ProductName,
+                        SupplierName = @SupplierName,
+                        Contact = @Contact,
+                        Country = @Country,
+                        Quantity = @Quantity,
+                        Price = @Price,
+                        Material = @Material,
+                        Size = @Size,
+                        Type = @Type,
+                        Quarter = @Quarter
+                        WHERE OfferID = @OfferID";
 
                         using var cmd = new MySqlCommand(updateQuery, conn);
                         cmd.Parameters.AddWithValue("@OfferID", offerId);
@@ -261,15 +282,88 @@ namespace OffersSearchApp
                 }
 
                 isSaved = true;
-                string message = $"📝 تم إضافة {insertedCount} عرض جديد.\n✏️ تم تحديث {updatedCount} عرض.";
-                MessageBox.Show(message, "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                LoadData();
+
+                string message = $"📝 Successfully added {insertedCount} new offer(s).\n✏️ Successfully updated {updatedCount} offer(s).";
+                MessageBox.Show(message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (closeAfterSave)
+                    Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ في قاعدة البيانات:\n" + ex.Message, "خطأ",
+                MessageBox.Show("Database error occurred:\n" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void BtnToggleSelect_Click(object? sender, EventArgs e)
+        {
+
+            if (dgvOffers.CurrentRow.Cells["OfferID"].Value == null ||
+                dgvOffers.CurrentRow.Cells["OfferID"].Value == DBNull.Value)
+            {
+                MessageBox.Show("This offer hasn’t been saved to the database yet. Please save it before proceeding.", "Notice",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int offerId = Convert.ToInt32(dgvOffers.CurrentRow.Cells["OfferID"].Value);
+
+            DataRowView? rowView = dgvOffers.CurrentRow.DataBoundItem as DataRowView;
+            if (rowView == null)
+            {
+                MessageBox.Show("Unable to access the row data.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!offersTable.Columns.Contains("IsSelected"))
+            {
+                MessageBox.Show("The 'IsSelected' column does not exist in the data table.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            bool currentSelected = false;
+            if (rowView["IsSelected"] != null && rowView["IsSelected"] != DBNull.Value)
+            {
+                currentSelected = Convert.ToBoolean(rowView["IsSelected"]);
+            }
+
+            bool newSelected = !currentSelected;
+
+            try
+            {
+                using var conn = new MySqlConnection(connStr);
+                conn.Open();
+
+                string updateQuery = "UPDATE Offers SET IsSelected = @IsSelected WHERE OfferID = @OfferID";
+                using var cmd = new MySqlCommand(updateQuery, conn);
+                cmd.Parameters.AddWithValue("@IsSelected", newSelected ? 1 : 0);
+                cmd.Parameters.AddWithValue("@OfferID", offerId);
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    rowView["IsSelected"] = newSelected;
+
+                    DataRow[] rows = offersTable.Select($"OfferID = {offerId}");
+                    if (rows.Length > 0)
+                    {
+                        rows[0]["IsSelected"] = newSelected;
+                    }
+                    ApplyColorsBasedOnSelection();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to update the offer status:\n" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private int GetNextOfferId(MySqlConnection conn)
         {
             string query = "SELECT MAX(OfferID) FROM Offers";
@@ -277,6 +371,7 @@ namespace OffersSearchApp
             var result = cmd.ExecuteScalar();
             return (result != DBNull.Value && result != null) ? Convert.ToInt32(result) + 1 : 1;
         }
+
         private object GetValueOrNull(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -284,6 +379,7 @@ namespace OffersSearchApp
             string str = value.ToString().Trim();
             return string.IsNullOrEmpty(str) ? DBNull.Value : str;
         }
+
         private object ParseNullableInt(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -292,41 +388,71 @@ namespace OffersSearchApp
                 return result;
             return DBNull.Value;
         }
+
+        private object ParseNullableDecimal(object value)
+        {
+            if (value == null || value == DBNull.Value)
+                return DBNull.Value;
+            if (decimal.TryParse(value.ToString(), out decimal result))
+                return result;
+            return DBNull.Value;
+        }
+
         private void DgvOffers_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                e.SuppressKeyPress = true;
+                SaveData(false);
+            }
+            else if (e.Control && e.KeyCode == Keys.N)
+            {
+                e.SuppressKeyPress = true;
+                AddNewEmptyRow();
+                if (dgvOffers.Rows.Count > 0)
+                {
+                    dgvOffers.CurrentCell = dgvOffers.Rows[dgvOffers.Rows.Count - 1].Cells[0];
+                }
+            }
+            else if (e.Control && e.KeyCode == Keys.Delete)
             {
                 e.SuppressKeyPress = true;
 
-                var currentCell = dgvOffers.CurrentCell;
-                if (currentCell == null) return;
-
-                int currentColumn = currentCell.ColumnIndex;
-                int currentRow = currentCell.RowIndex;
-                int totalColumns = dgvOffers.Columns.Count;
-
-                if (currentColumn < totalColumns - 1)
+                if (dgvOffers.CurrentRow != null)
                 {
-                    dgvOffers.CurrentCell = dgvOffers[currentColumn + 1, currentRow];
-                }
-                else
-                {
-                    if (currentRow < dgvOffers.Rows.Count - 1)
+                    if (MessageBox.Show("Do you want to delete this row?", "Confirmation",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        dgvOffers.CurrentCell = dgvOffers[0, currentRow + 1];
-                    }
-                    else
-                    {
-                        AddNewEmptyRow();
-                        dgvOffers.CurrentCell = dgvOffers[0, dgvOffers.Rows.Count - 1];
+                        dgvOffers.Rows.Remove(dgvOffers.CurrentRow);
                     }
                 }
             }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+
+                if (dgvOffers.CurrentCell != null)
+                    dgvOffers.CurrentCell.Value = DBNull.Value;
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                e.SuppressKeyPress = true;
+                string? clipboardText = Clipboard.GetText();
+                if (string.IsNullOrEmpty(clipboardText))
+                    return;
+
+                if (dgvOffers.CurrentCell != null)
+                {
+                    dgvOffers.CurrentCell.Value = clipboardText;
+                }
+            }
         }
-        private void SetColumnWidths()
+
+        private void ConfigureDgvOffersColumns()
         {
             dgvOffers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+            // تحديد عرض الأعمدة
             dgvOffers.Columns["OfferID"].FillWeight = 4;
             dgvOffers.Columns["ProductName"].FillWeight = 10;
             dgvOffers.Columns["SupplierName"].FillWeight = 20;
@@ -338,34 +464,61 @@ namespace OffersSearchApp
             dgvOffers.Columns["Size"].FillWeight = 10;
             dgvOffers.Columns["Type"].FillWeight = 8;
             dgvOffers.Columns["Quarter"].FillWeight = 4;
-        }
-        private void SetColumnAlignment()
-        {
+
+            // ضبط محاذاة النصوص لجميع الأعمدة
             foreach (DataGridViewColumn col in dgvOffers.Columns)
             {
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
+            // محاذاة خاصة لعمود SupplierName
             if (dgvOffers.Columns["SupplierName"] != null)
             {
                 dgvOffers.Columns["SupplierName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             }
         }
-        private object ParseNullableDecimal(object value)
+        private void ApplyColorsBasedOnSelection()
         {
-            if (value == null || value == DBNull.Value)
-                return DBNull.Value;
-            if (decimal.TryParse(value.ToString(), out decimal result))
-                return result;
-            return DBNull.Value;
+            if (dgvOffers.Rows.Count == 0) return;
+
+            if (!offersTable.Columns.Contains("IsSelected"))
+                return;
+
+            foreach (DataGridViewRow row in dgvOffers.Rows)
+            {
+                if (row.DataBoundItem != null)
+                {
+                    DataRowView rowView = (DataRowView)row.DataBoundItem;
+                    bool isSelected = false;
+
+                    if (rowView["IsSelected"] != null && rowView["IsSelected"] != DBNull.Value)
+                    {
+                        isSelected = Convert.ToBoolean(rowView["IsSelected"]);
+                    }
+
+                    if (isSelected)
+                    {
+                        row.DefaultCellStyle.BackColor = ThemeManager.SelectionBackColor;
+                        row.DefaultCellStyle.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        row.DefaultCellStyle.BackColor = ThemeManager.GridBackgroundColor;
+                        row.DefaultCellStyle.ForeColor = ThemeManager.TextColor;
+                    }
+                }
+            }
         }
+
         private void BtnCancel_Click(object sender, EventArgs e)
         {
             Close();
         }
+
         private void BtnToggleTheme_Click(object? sender, EventArgs e)
         {
             ThemeManager.ToggleTheme();
+            ApplyColorsBasedOnSelection();
         }
     }
 }

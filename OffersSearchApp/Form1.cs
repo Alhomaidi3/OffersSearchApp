@@ -46,20 +46,30 @@ namespace OffersSearchApp
             {
                 using var conn = new MySqlConnection(connStr);
                 conn.Open();
-                string query = "SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter FROM offers";
+                string query = "SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter, IsSelected FROM offers";
                 using var adapter = new MySqlDataAdapter(query, conn);
                 offersTable = new DataTable();
                 adapter.Fill(offersTable);
 
                 offersView = new DataView(offersTable);
                 offersGrid.DataSource = offersView;
-                SetColumnWidths();
-                SetColumnAlignment();
+
+                if (offersGrid.Columns["IsSelected"] != null)
+                {
+                    offersGrid.Columns["IsSelected"].Visible = false;
+                }
+
+                ConfigureGridColumns();
                 UpdateRecordsCount();
+                if (offersGrid.Columns["Price"] != null)
+                {
+                    offersGrid.Columns["Price"].DefaultCellStyle.Format = "C";
+                }
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ في تحميل البيانات: " + ex.Message);
+                MessageBox.Show("Failed to load data: " + ex.Message);
             }
         }
 
@@ -70,8 +80,8 @@ namespace OffersSearchApp
         private void BtnDeleteAll_Click(object? sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
-                "هل أنت متأكد من أنك تريد حذف كل السجلات؟\nهذه العملية غير قابلة للتراجع!",
-                "تأكيد الحذف",
+                "Are you sure you want to delete all records?\nThis action cannot be undone!",
+                "Delete Confirmation",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
@@ -83,12 +93,12 @@ namespace OffersSearchApp
                 conn.Open();
                 using var cmd = new MySqlCommand("DELETE FROM offers", conn);
                 cmd.ExecuteNonQuery();
-                MessageBox.Show("تم حذف كل السجلات بنجاح!");
+                MessageBox.Show("All records have been successfully deleted!");
                 LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ أثناء الحذف: " + ex.Message);
+                MessageBox.Show("Error while deleting: " + ex.Message);
             }
         }
 
@@ -103,13 +113,13 @@ namespace OffersSearchApp
 
             try
             {
-                ImportService.ImportToDatabase(ofd.FileName, connStr);
-                MessageBox.Show("تم الاستيراد بنجاح!");
+                ImportService.ImportToDatabase(ofd.FileName, connStr, ImportService.ImportType.Offers);
+                MessageBox.Show("Import completed successfully!");
                 LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ أثناء الاستيراد: " + ex.Message);
+                MessageBox.Show("Error occurred during import: " + ex.Message);
             }
         }
         private void BtnAddItem_Click(object sender, EventArgs e)
@@ -137,7 +147,7 @@ namespace OffersSearchApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حدث خطأ أثناء التصدير: " + ex.Message);
+                MessageBox.Show("Error occurred during export: " + ex.Message);
             }
 
         }
@@ -150,23 +160,17 @@ namespace OffersSearchApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حدث خطأ أثناء إنشاء التقرير: " + ex.Message);
+                MessageBox.Show("Error occurred while generating the report: " + ex.Message);
             }
         }
 
         private void BtnEditOffer_Click(object sender, EventArgs e)
         {
-            if (offersGrid.CurrentRow == null)
-            {
-                MessageBox.Show("الرجاء اختيار العرض الذي تريد تعديله من الجدول.");
-                return;
-            }
-
             // Get the ProductName from the selected row
             string productName = offersGrid.CurrentRow.Cells["ProductName"].Value?.ToString();
             if (string.IsNullOrEmpty(productName))
             {
-                MessageBox.Show("الرجاء اختيار عرض يحتوي على اسم منتج صالح.");
+                MessageBox.Show("Please select an offer with a valid product name.");
                 return;
             }
             this.Hide();
@@ -184,20 +188,14 @@ namespace OffersSearchApp
         }
         private void BtnDeleteOffer_Click(object sender, EventArgs e)
         {
-            if (offersGrid.CurrentRow == null)
-            {
-                MessageBox.Show("الرجاء اختيار العرض الذي تريد حذفه من الجدول.");
-                return;
-            }
-
             if (!int.TryParse(offersGrid.CurrentRow.Cells["OfferID"].Value.ToString(), out int offerId))
             {
-                MessageBox.Show("رقم العرض غير صالح.");
+                MessageBox.Show("Invalid offer ID.");
                 return;
             }
 
 
-            var result = MessageBox.Show("هل أنت متأكد أنك تريد حذف هذا العرض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var result = MessageBox.Show("Are you sure you want to delete this offer?", "Delete Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
@@ -212,12 +210,12 @@ namespace OffersSearchApp
 
                     cmd.ExecuteNonQuery();
 
-                    MessageBox.Show("تم حذف العرض بنجاح!");
+                    MessageBox.Show("The offer has been successfully deleted!");
                     LoadData();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("حدث خطأ أثناء الحذف:\n" + ex.Message);
+                    MessageBox.Show("An error occurred while deleting:\n" + ex.Message);
                 }
             }
         }
@@ -262,6 +260,17 @@ namespace OffersSearchApp
             // فرض إعادة التخطيط
             mainLayout.PerformLayout();
         }
+        private void btnOpenSuppliers_Click_1(object sender, EventArgs e)
+        {
+            this.Hide();
+
+            using var frm = new FormSuppliers(connStr);
+            frm.ShowDialog();
+
+            this.Show();
+
+        }
+
         #endregion
 
         #region Search & Sorting
@@ -318,10 +327,11 @@ namespace OffersSearchApp
                     textBox.Text = "";
             }
         }
-        private void SetColumnWidths()
+        private void ConfigureGridColumns()
         {
             offersGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+            // تحديد عرض الأعمدة
             offersGrid.Columns["OfferID"].FillWeight = 6;
             offersGrid.Columns["ProductName"].FillWeight = 10;
             offersGrid.Columns["SupplierName"].FillWeight = 20;
@@ -333,14 +343,14 @@ namespace OffersSearchApp
             offersGrid.Columns["Size"].FillWeight = 10;
             offersGrid.Columns["Type"].FillWeight = 7;
             offersGrid.Columns["Quarter"].FillWeight = 6;
-        }
-        private void SetColumnAlignment()
-        {
+
+            // ضبط محاذاة النصوص لجميع الأعمدة
             foreach (DataGridViewColumn col in offersGrid.Columns)
             {
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
+            // محاذاة خاصة لعمود SupplierName
             if (offersGrid.Columns["SupplierName"] != null)
             {
                 offersGrid.Columns["SupplierName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
@@ -349,19 +359,13 @@ namespace OffersSearchApp
         private void UpdateRecordsCount()
         {
             if (recordsCountLabel != null && offersView != null && offersTable != null)
-                recordsCountLabel.Text = $"عدد النتائج: {offersView.Count} / إجمالي السجلات: {offersTable.Rows.Count}";
+                recordsCountLabel.Text = $"Records found: {offersView.Count} / Total records: {offersTable.Rows.Count}";
         }
 
         #endregion
 
         private void offersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || offersGrid.Rows[e.RowIndex].IsNewRow)
-            {
-                MessageBox.Show("الرجاء اختيار عرض صالح من الجدول.");
-                return;
-            }
-
             string productName = offersGrid.Rows[e.RowIndex].Cells["ProductName"].Value?.ToString();
 
             this.Hide();
@@ -377,5 +381,6 @@ namespace OffersSearchApp
                 LoadData();
             }
         }
+
     }
 }
