@@ -1,8 +1,10 @@
-﻿using MySql.Data.MySqlClient;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
 using System.Text;
+using System.Windows.Forms;
 
 namespace OffersSearchApp
 {
@@ -18,6 +20,7 @@ namespace OffersSearchApp
         public Form1()
         {
             InitializeComponent();
+            Logger.Log("Application started");
 
             foreach (var col in searchColumns)
             {
@@ -44,6 +47,7 @@ namespace OffersSearchApp
         {
             try
             {
+                Logger.Log("Loading offers from database");
                 using var conn = new MySqlConnection(connStr);
                 conn.Open();
                 string query = "SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter, IsSelected FROM offers";
@@ -69,6 +73,7 @@ namespace OffersSearchApp
             }
             catch (Exception ex)
             {
+                Logger.Log(ex.Message, "ERROR");
                 MessageBox.Show("Failed to load data: " + ex.Message);
             }
         }
@@ -93,11 +98,13 @@ namespace OffersSearchApp
                 conn.Open();
                 using var cmd = new MySqlCommand("DELETE FROM offers", conn);
                 cmd.ExecuteNonQuery();
+                Logger.Log("All records have been successfully deleted");
                 MessageBox.Show("All records have been successfully deleted!");
                 LoadData();
             }
             catch (Exception ex)
             {
+                Logger.Log(ex.Message, "ERROR");
                 MessageBox.Show("Error while deleting: " + ex.Message);
             }
         }
@@ -110,20 +117,24 @@ namespace OffersSearchApp
             };
 
             if (ofd.ShowDialog() != DialogResult.OK) return;
-
+            
             try
             {
+                Logger.Log("Import from Excel started");
                 ImportService.ImportToDatabase(ofd.FileName, connStr, ImportService.ImportType.Offers);
+                Logger.Log("Import completed");
                 MessageBox.Show("Import completed successfully!");
                 LoadData();
             }
             catch (Exception ex)
             {
+                Logger.Log("Import error: " + ex.Message, "ERROR");
                 MessageBox.Show("Error occurred during import: " + ex.Message);
             }
         }
         private void BtnAddItem_Click(object sender, EventArgs e)
         {
+            Logger.Log("Add new offers started");
             this.Hide();
 
             using var form = new FormAddItem(connStr);
@@ -131,8 +142,8 @@ namespace OffersSearchApp
             form.ShowDialog();
 
             this.Show();
-
-            this.WindowState = form.ParentWindowState;
+            this.WindowState = form.WindowState;
+            Logger.Log("Add new offers ended");
 
             if (form.IsSaved)
                 LoadData();
@@ -144,9 +155,11 @@ namespace OffersSearchApp
             try
             {
                 ExcelExportService.ExportToCsv(offersView!, "OffersReport");
+                Logger.Log("Offers exported to CSV");
             }
             catch (Exception ex)
             {
+                Logger.Log("Export error: " + ex.Message, "ERROR");
                 MessageBox.Show("Error occurred during export: " + ex.Message);
             }
 
@@ -157,16 +170,17 @@ namespace OffersSearchApp
             try
             {
                 WordReportService.GenerateWordReport(offersTable!, cbQuarter.Text);
+                Logger.Log("Word Report created");
             }
             catch (Exception ex)
             {
+                Logger.Log(ex.Message, "ERROR");
                 MessageBox.Show("Error occurred while generating the report: " + ex.Message);
             }
         }
 
         private void BtnEditOffer_Click(object sender, EventArgs e)
         {
-            // Get the ProductName from the selected row
             string productName = offersGrid.CurrentRow.Cells["ProductName"].Value?.ToString();
             if (string.IsNullOrEmpty(productName))
             {
@@ -174,13 +188,13 @@ namespace OffersSearchApp
                 return;
             }
             this.Hide();
-
+            Logger.Log($"Review started for product: {productName}");
             using var editForm = new FormAddItem(connStr, productName);
             editForm.ParentWindowState = this.WindowState;
             editForm.ShowDialog();
             this.Show();
-
-            this.WindowState = editForm.ParentWindowState;
+            this.WindowState = editForm.WindowState;
+            Logger.Log($"Review end for product: {productName}");
             if (editForm.IsSaved)
             {
                 LoadData();
@@ -209,12 +223,13 @@ namespace OffersSearchApp
                     cmd.Parameters.AddWithValue("@OfferID", offerId);
 
                     cmd.ExecuteNonQuery();
-
+                    Logger.Log($"Offer deleted: {offerId}");
                     MessageBox.Show("The offer has been successfully deleted!");
                     LoadData();
                 }
                 catch (Exception ex)
                 {
+                    Logger.Log(ex.Message, "ERROR");
                     MessageBox.Show("An error occurred while deleting:\n" + ex.Message);
                 }
             }
@@ -222,6 +237,8 @@ namespace OffersSearchApp
         private void BtnToggleTheme_Click(object? sender, EventArgs e)
         {
             ThemeManager.ToggleTheme();
+            Logger.Log("Appearance changed");
+
         }
 
         private bool isExpanded = false;
@@ -237,13 +254,11 @@ namespace OffersSearchApp
             }
             else
             {
-                // تكبير حجم الـ Sidebar
-                mainLayout.ColumnStyles[0].Width = 160; // الحجم الأصلي
+                mainLayout.ColumnStyles[0].Width = 160;
                 panelSidebar.MinimumSize = new Size(160, 0);
                 isExpanded = true;
             }
 
-            // إخفاء/إظهار المحتويات داخل الـ Sidebar
             foreach (Control c in panelSidebar.Controls)
             {
                 if (c is GroupBox groupBox)
@@ -257,17 +272,19 @@ namespace OffersSearchApp
                 }
             }
 
-            // فرض إعادة التخطيط
             mainLayout.PerformLayout();
         }
         private void btnOpenSuppliers_Click_1(object sender, EventArgs e)
         {
+            Logger.Log("Review started for suppliers");
             this.Hide();
 
-            using var frm = new FormSuppliers(connStr);
-            frm.ShowDialog();
-
+            using var form = new FormSuppliers(connStr);
+            form.ParentWindowState = this.WindowState;
+            form.ShowDialog();
             this.Show();
+            this.WindowState = form.WindowState;
+            Logger.Log("Review end for suppliers");
 
         }
 
@@ -369,18 +386,24 @@ namespace OffersSearchApp
             string productName = offersGrid.Rows[e.RowIndex].Cells["ProductName"].Value?.ToString();
 
             this.Hide();
-
+            Logger.Log($"Review started for product: {productName}");
             using var editForm = new FormAddItem(connStr, productName);
             editForm.ParentWindowState = this.WindowState;
             editForm.ShowDialog();
             this.Show();
+            this.WindowState = editForm.WindowState;
+            Logger.Log($"Review end for product: {productName}");
 
-            this.WindowState = editForm.ParentWindowState;
             if (editForm.IsSaved)
             {
                 LoadData();
             }
         }
 
+        private void btnLogs_Click(object sender, EventArgs e)
+        {
+            using var frm = new FormLogs();
+            frm.ShowDialog();
+        }
     }
 }

@@ -95,13 +95,13 @@ namespace OffersSearchApp
                      CompanyOwnerName, CompanyOwnerPhone, CompanyOwnerEmail,
                      ContactPersonName, ContactPersonPhone, ContactPersonEmail,
                      RegistrationNumber, GoodsOrService, AccountOpeningDate,
-                     Notes1, Notes2)
+                     Notes1, Notes2,Amount)
                     VALUES
                     (@SupplierID, @SupplierName, @SupplierAddress, @Country,
                      @CompanyOwnerName, @CompanyOwnerPhone, @CompanyOwnerEmail,
                      @ContactPersonName, @ContactPersonPhone, @ContactPersonEmail,
                      @RegistrationNumber, @GoodsOrService, @AccountOpeningDate,
-                     @Notes1, @Notes2)";
+                     @Notes1, @Notes2,@Amount)";
 
                 using var cmd = new MySqlCommand(query, conn);
 
@@ -120,6 +120,8 @@ namespace OffersSearchApp
                 cmd.Parameters.AddWithValue("@AccountOpeningDate", GetValue(row, "AccountOpeningDate"));
                 cmd.Parameters.AddWithValue("@Notes1", GetValue(row, "Notes1"));
                 cmd.Parameters.AddWithValue("@Notes2", GetValue(row, "Notes2"));
+                cmd.Parameters.AddWithValue("@Amount", ParseNullableDecimal(row["Amount"]));
+
 
                 cmd.ExecuteNonQuery();
             }

@@ -4,15 +4,6 @@
     {
         private System.ComponentModel.IContainer components = null;
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         private void InitializeComponent()
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
@@ -21,10 +12,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             mainLayout = new TableLayoutPanel();
             panelSidebar = new Panel();
-            btnOpenSuppliers = new Button();
-            btnToggleTheme = new Button();
-            btnMenu = new Button();
+            groupBox3 = new GroupBox();
+            btnLogs = new Button();
             btnDeleteAll = new Button();
+            btnToggleTheme = new Button();
+            btnOpenSuppliers = new Button();
+            btnMenu = new Button();
             groupBox2 = new GroupBox();
             BtnDeleteOffer = new Button();
             btnAddOffer = new Button();
@@ -62,6 +55,7 @@
             recordsCountLabel = new Label();
             mainLayout.SuspendLayout();
             panelSidebar.SuspendLayout();
+            groupBox3.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             searchPanelFlow.SuspendLayout();
@@ -100,10 +94,8 @@
             // panelSidebar
             // 
             panelSidebar.BackColor = Color.AliceBlue;
-            panelSidebar.Controls.Add(btnOpenSuppliers);
-            panelSidebar.Controls.Add(btnToggleTheme);
+            panelSidebar.Controls.Add(groupBox3);
             panelSidebar.Controls.Add(btnMenu);
-            panelSidebar.Controls.Add(btnDeleteAll);
             panelSidebar.Controls.Add(groupBox2);
             panelSidebar.Controls.Add(groupBox1);
             panelSidebar.Dock = DockStyle.Fill;
@@ -114,20 +106,46 @@
             panelSidebar.Size = new Size(40, 730);
             panelSidebar.TabIndex = 0;
             // 
-            // btnOpenSuppliers
+            // groupBox3
             // 
-            btnOpenSuppliers.AutoSize = true;
-            btnOpenSuppliers.BackColor = SystemColors.ControlDark;
-            btnOpenSuppliers.FlatStyle = FlatStyle.Flat;
-            btnOpenSuppliers.ForeColor = Color.White;
-            btnOpenSuppliers.Location = new Point(12, 536);
-            btnOpenSuppliers.Name = "btnOpenSuppliers";
-            btnOpenSuppliers.Size = new Size(135, 30);
-            btnOpenSuppliers.TabIndex = 11;
-            btnOpenSuppliers.Text = "Suppliers Managment";
-            btnOpenSuppliers.UseVisualStyleBackColor = false;
-            btnOpenSuppliers.Visible = false;
-            btnOpenSuppliers.Click += btnOpenSuppliers_Click_1;
+            groupBox3.Controls.Add(btnLogs);
+            groupBox3.Controls.Add(btnDeleteAll);
+            groupBox3.Controls.Add(btnToggleTheme);
+            groupBox3.Controls.Add(btnOpenSuppliers);
+            groupBox3.Location = new Point(3, 480);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(150, 180);
+            groupBox3.TabIndex = 10;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Other Settings";
+            groupBox3.Visible = false;
+            // 
+            // btnLogs
+            // 
+            btnLogs.AutoSize = true;
+            btnLogs.BackColor = Color.FromArgb(41, 85, 152);
+            btnLogs.FlatStyle = FlatStyle.Flat;
+            btnLogs.ForeColor = Color.White;
+            btnLogs.Location = new Point(10, 100);
+            btnLogs.Name = "btnLogs";
+            btnLogs.Size = new Size(130, 30);
+            btnLogs.TabIndex = 7;
+            btnLogs.Text = "📄 Activity Logs";
+            btnLogs.UseVisualStyleBackColor = false;
+            btnLogs.Click += btnLogs_Click;
+            // 
+            // btnDeleteAll
+            // 
+            btnDeleteAll.AutoSize = true;
+            btnDeleteAll.BackColor = Color.Crimson;
+            btnDeleteAll.FlatStyle = FlatStyle.Flat;
+            btnDeleteAll.ForeColor = Color.White;
+            btnDeleteAll.Location = new Point(10, 140);
+            btnDeleteAll.Name = "btnDeleteAll";
+            btnDeleteAll.Size = new Size(130, 30);
+            btnDeleteAll.TabIndex = 12;
+            btnDeleteAll.Text = "Delete All";
+            btnDeleteAll.UseVisualStyleBackColor = false;
             // 
             // btnToggleTheme
             // 
@@ -135,14 +153,27 @@
             btnToggleTheme.BackColor = Color.FromArgb(128, 128, 255);
             btnToggleTheme.FlatStyle = FlatStyle.Flat;
             btnToggleTheme.ForeColor = Color.White;
-            btnToggleTheme.Location = new Point(12, 500);
+            btnToggleTheme.Location = new Point(10, 60);
             btnToggleTheme.Name = "btnToggleTheme";
             btnToggleTheme.Size = new Size(130, 30);
             btnToggleTheme.TabIndex = 10;
             btnToggleTheme.Text = "🌙 Dark Mode";
             btnToggleTheme.UseVisualStyleBackColor = false;
-            btnToggleTheme.Visible = false;
             btnToggleTheme.Click += BtnToggleTheme_Click;
+            // 
+            // btnOpenSuppliers
+            // 
+            btnOpenSuppliers.AutoSize = true;
+            btnOpenSuppliers.BackColor = SystemColors.ControlDark;
+            btnOpenSuppliers.FlatStyle = FlatStyle.Flat;
+            btnOpenSuppliers.ForeColor = Color.White;
+            btnOpenSuppliers.Location = new Point(10, 20);
+            btnOpenSuppliers.Name = "btnOpenSuppliers";
+            btnOpenSuppliers.Size = new Size(135, 30);
+            btnOpenSuppliers.TabIndex = 11;
+            btnOpenSuppliers.Text = "Suppliers Managment";
+            btnOpenSuppliers.UseVisualStyleBackColor = false;
+            btnOpenSuppliers.Click += btnOpenSuppliers_Click_1;
             // 
             // btnMenu
             // 
@@ -158,21 +189,6 @@
             btnMenu.Text = "☰";
             btnMenu.UseVisualStyleBackColor = false;
             btnMenu.Click += BtnMenu_Click;
-            // 
-            // btnDeleteAll
-            // 
-            btnDeleteAll.AutoSize = true;
-            btnDeleteAll.BackColor = Color.Crimson;
-            btnDeleteAll.FlatStyle = FlatStyle.Flat;
-            btnDeleteAll.ForeColor = Color.White;
-            btnDeleteAll.Location = new Point(12, 460);
-            btnDeleteAll.Name = "btnDeleteAll";
-            btnDeleteAll.Size = new Size(130, 30);
-            btnDeleteAll.TabIndex = 1;
-            btnDeleteAll.Text = "Delete All";
-            btnDeleteAll.UseVisualStyleBackColor = false;
-            btnDeleteAll.Visible = false;
-            btnDeleteAll.Click += BtnDeleteAll_Click;
             // 
             // groupBox2
             // 
@@ -235,12 +251,12 @@
             groupBox1.Controls.Add(cbQuarter);
             groupBox1.Controls.Add(btnExportExcel);
             groupBox1.Controls.Add(btnWordReport);
-            groupBox1.Location = new Point(3, 276);
+            groupBox1.Location = new Point(3, 280);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(150, 175);
             groupBox1.TabIndex = 8;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Display and Export Data";
+            groupBox1.Text = "Import and Export Data";
             groupBox1.Visible = false;
             // 
             // btnImportExcel
@@ -597,7 +613,8 @@
             Text = "Offers Search App";
             mainLayout.ResumeLayout(false);
             panelSidebar.ResumeLayout(false);
-            panelSidebar.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
@@ -628,7 +645,6 @@
         private GroupBox groupBox2;
         private GroupBox groupBox1;
         private Button btnMenu;
-        private Button btnDeleteAll;
         private Button BtnDeleteOffer;
         private Button btnAddOffer;
         private Button btnEditOffer;
@@ -664,5 +680,8 @@
         private Label recordsCountLabel;
         private Button btnToggleTheme;
         private Button btnOpenSuppliers;
+        private GroupBox groupBox3;
+        private Button btnDeleteAll;
+        private Button btnLogs;
     }
 }

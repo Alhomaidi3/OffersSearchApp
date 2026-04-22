@@ -26,16 +26,12 @@ namespace OffersSearchApp
 
         private void ApplyTheme()
         {
-            // تطبيق على النموذج نفسه
             this.BackColor = ThemeManager.CurrentBackColor;
 
-            // تطبيق على جميع التحكمات
             ApplyThemeToControl(this);
 
-            // تطبيق خاص على الـ DataGridView إذا وجد
             ApplyThemeToDataGridViews(this);
 
-            // تحديث أزرار تبديل الثيم
             UpdateThemeToggleButtons();
         }
 
@@ -43,7 +39,6 @@ namespace OffersSearchApp
         {
             foreach (Control ctrl in parent.Controls)
             {
-                // تحديد اللون حسب نوع التحكم
                 switch (ctrl)
                 {
                     case FlowLayoutPanel flowPanel:
@@ -75,6 +70,7 @@ namespace OffersSearchApp
                         comboBox.BackColor = ThemeManager.InputBackColor;
                         comboBox.ForeColor = ThemeManager.TextColor;
                         break;
+               
                 }
 
                 // معالجة التحكمات الفرعية
@@ -89,49 +85,55 @@ namespace OffersSearchApp
             switch (button.Name)
             {
                 case "btnDeleteAll":
-                    button.BackColor = ThemeManager.DeleteAllButtonColor;
-                    break;
                 case "BtnDeleteSupplier":
-                    button.BackColor = ThemeManager.DeleteAllButtonColor;
+                case "BtnDeleteOffer":
+                    button.BackColor = ThemeManager.DeleteButtonColor;
                     break;
+
                 case "btnClearSearch":
                     button.BackColor = ThemeManager.ClearSearchButtonColor;
                     break;
+
                 case "btnSave":
                     button.BackColor = ThemeManager.SaveButtonColor;
                     break;
+
                 case "btnCancel":
                     button.BackColor = ThemeManager.CancelButtonColor;
                     break;
+
                 case "btnAddOffer":
-                    button.BackColor = ThemeManager.AddOfferButtonColor;
-                    break;
                 case "btnEditOffer":
-                    button.BackColor = ThemeManager.EditOfferButtonColor;
+                    button.BackColor = ThemeManager.AddItemButtonColor;
                     break;
-                case "BtnDeleteOffer":
-                    button.BackColor = ThemeManager.DeleteOfferButtonColor;
-                    break;
+
                 case "btnImportExcel":
-                    button.BackColor = ThemeManager.ImportExcelButtonColor;
-                    break;
                 case "btnExportExcel":
-                    button.BackColor = ThemeManager.ExportExcelButtonColor;
+                    button.BackColor = ThemeManager.ExcelButtonColor;
                     break;
+
                 case "btnWordReport":
-                    button.BackColor = ThemeManager.WordReportButtonColor;
+                case "btnLogs":
+                    button.BackColor = ThemeManager.ReportButtonColor;
                     break;
+
                 case "btnToggleTheme":
                     button.BackColor = ThemeManager.ToggleThemeButtonColor;
                     break;
-                case "btnToggleSelect":  
-                    button.BackColor = ThemeManager.ToggleSelectButtonColor;  // ستضيف هذه الخاصية لاحقاً
+
+                case "btnToggleSelect":
+                case "btnItemDetails":
+                    button.BackColor = ThemeManager.ToggleSelectButtonColor;
                     break;
+
+                case "btnOpenSuppliers":
+                    button.BackColor = ThemeManager.btnOpenSuppliersColor;
+                    break;
+
                 default:
                     button.BackColor = ThemeManager.CurrentButtonBackColor;
                     break;
             }
-
             button.FlatStyle = FlatStyle.Flat;
 
             if (button.Name != "btnMenu")

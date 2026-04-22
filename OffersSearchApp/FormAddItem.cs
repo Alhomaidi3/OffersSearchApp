@@ -51,19 +51,23 @@ namespace OffersSearchApp
             {
                 try
                 {
+                    Logger.Log("Loading data in FormAddItem");
                     using var conn = new MySqlConnection(connStr);
                     conn.Open();
                     string query = @"SELECT OfferID, ProductName, SupplierName, Contact, Quantity, Material, Size, Type, Price, Country, Quarter, IsSelected FROM offers 
-                             WHERE ProductName LIKE @ProductName
+                             WHERE ProductName LIKE @ProductName or ProductName LIKE @ProductName2
                              ORDER BY OfferID";
 
                     using var cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@ProductName", "%"+productNameForEdit+"%");
+                    cmd.Parameters.AddWithValue("@ProductName", "%"+productNameForEdit);
+                    cmd.Parameters.AddWithValue("@ProductName2", "%" + productNameForEdit+" ");
+
                     using var adapter = new MySqlDataAdapter(cmd);
                     adapter.Fill(offersTable);
                 }
                 catch (Exception ex)
                 {
+                    Logger.Log("LoadData error: " + ex.Message, "ERROR");
                     MessageBox.Show("Failed to load data: " + ex.Message, "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -169,6 +173,7 @@ namespace OffersSearchApp
             newRow["Quarter"] = "";
             newRow["IsSelected"] = false;
             offersTable.Rows.Add(newRow);
+            Logger.Log("New empty row added");
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
@@ -177,6 +182,7 @@ namespace OffersSearchApp
         }
         private void SaveData(bool closeAfterSave)
         {
+            Logger.Log("Saving offers started");
             bool hasValidRow = false;
             foreach (DataRow row in offersTable.Rows)
             {
@@ -192,6 +198,7 @@ namespace OffersSearchApp
 
             if (!hasValidRow)
             {
+                Logger.Log("Save failed: No valid rows", "WARNING");
                 MessageBox.Show("Please ensure that at least one row contains both the Product Name and Supplier Name.",
                     "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -285,13 +292,16 @@ namespace OffersSearchApp
 
                 LoadData();
 
+                Logger.Log($"Save completed: {insertedCount} inserted, {updatedCount} updated");
                 string message = $"📝 Successfully added {insertedCount} new offer(s).\n✏️ Successfully updated {updatedCount} offer(s).";
                 MessageBox.Show(message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
                 if (closeAfterSave)
                     Close();
             }
             catch (Exception ex)
             {
+                Logger.Log("Save error: " + ex.Message, "ERROR");
                 MessageBox.Show("Database error occurred:\n" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -355,12 +365,16 @@ namespace OffersSearchApp
                         rows[0]["IsSelected"] = newSelected;
                     }
                     ApplyColorsBasedOnSelection();
+                    Logger.Log($"Offer {offerId} selection changed to: {newSelected}");
+
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Failed to update the offer status:\n" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Log($"Failed to update Offer {offerId}: {ex.Message}", "ERROR");
+
             }
         }
 
@@ -424,6 +438,7 @@ namespace OffersSearchApp
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         dgvOffers.Rows.Remove(dgvOffers.CurrentRow);
+                        Logger.Log("Row deleted from grid");
                     }
                 }
             }
@@ -452,7 +467,6 @@ namespace OffersSearchApp
         {
             dgvOffers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            // تحديد عرض الأعمدة
             dgvOffers.Columns["OfferID"].FillWeight = 4;
             dgvOffers.Columns["ProductName"].FillWeight = 10;
             dgvOffers.Columns["SupplierName"].FillWeight = 20;
@@ -512,11 +526,13 @@ namespace OffersSearchApp
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
+            Logger.Log("User cancelled without saving");
             Close();
         }
 
         private void BtnToggleTheme_Click(object? sender, EventArgs e)
         {
+            Logger.Log("Appearance changed");
             ThemeManager.ToggleTheme();
             ApplyColorsBasedOnSelection();
         }

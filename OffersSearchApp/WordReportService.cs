@@ -51,8 +51,11 @@ namespace OffersSearchApp
                     var body = doc.MainDocumentPart.Document.Body;
 
                     int productsCount = data.Select(r => r["ProductName"].ToString()).Distinct().Count();
-                    int suppliersCount = data.Select(r => r["SupplierName"].ToString()).Distinct().Count();
-
+                    int offersCount = data.Count();
+                    int suppliersCount = data
+                        .GroupBy(r => new { Product = r["ProductName"].ToString(), Supplier = r["SupplierName"].ToString() })
+                        .Select(g => g.Key.Supplier) 
+                        .Count();
                     var replacements = new Dictionary<string, string>
                     {
                         { "{{DATE}}", DateTime.Now.ToString("dd/MM/yyyy") },
@@ -64,7 +67,7 @@ namespace OffersSearchApp
                         { "{{TITLE2}}", "1. ملخص عدد الأصناف والموردين" },
                         { "{{INTRO4}}", "يتضمن هذا القسم معلومات حول الأصناف المتاحة وعدد الموردين لكل صنف، بالإضافة إلى إجمالي عدد الموردين" },
                         { "{{INTRO5}}", $"تم البحث عن {productsCount} صنف خلال الفترة الأخيرة." },
-                        { "{{INTRO6}}", $"إجمالي عدد الموردين {suppliersCount} مورد." },
+                        { "{{INTRO6}}", $"إجمالي عدد الموردين {suppliersCount} مورد مع {offersCount} عرض سعر." },
                         { "{{INTRO7}}", "وهذا الجدول تفصيل عدد الموردين لكل صنف:" },
 
                         { "{{TITLE3}}", "2. ملخص الأسعار لكل صنف" },
@@ -175,16 +178,21 @@ namespace OffersSearchApp
         private static Table BuildBestSupplierTable(List<DataRow> data)
         {
             Table table = CreatePlainTable5();
-            table.Append(CreateRow([ "ProductName", "SupplierName", "Price" ], isHeader: true));
+            table.Append(CreateRow(new[] { "ProductName", "SupplierName", "Price" }, isHeader: true));
 
             var best = data.GroupBy(r => r["ProductName"].ToString())
                 .Select(g =>
                 {
-                    var validPrices = g.Where(x => x["Price"] != DBNull.Value);
-                    if (!validPrices.Any())
-                        return new { Product = g.Key, Supplier = "Not Available", Price = 0m };
+                    var selectedSuppliers = g.Where(x => x["IsSelected"] != DBNull.Value && Convert.ToBoolean(x["IsSelected"]));
 
-                    var min = validPrices.OrderBy(x => Convert.ToDecimal(x["Price"])).First();
+                    if (!selectedSuppliers.Any()) 
+                        return new { Product = g.Key, Supplier = "لا يوجد مورد", Price = 0m };
+
+                    var min = selectedSuppliers.OrderBy(x => Convert.ToDecimal(x["Price"])).FirstOrDefault();
+                    
+                    if (min == null)
+                        return new { Product = g.Key, Supplier = "لا يوجد مورد", Price = 0m };
+
                     return new
                     {
                         Product = g.Key,
@@ -197,14 +205,14 @@ namespace OffersSearchApp
             {
                 var item = best[i];
                 table.Append(CreateRow(
-                    [item.Product!, item.Supplier, $"${item.Price:F2}" ],
+                    new[] { item.Product!, item.Supplier, $"${item.Price:F2}" },
                     rowIndex: i,
-                    customWidths: [ 2448, 4320, 1008 ]
+                    customWidths: new[] { 2448, 4320, 1008 }
                 ));
             }
+
             return table;
         }
-
         private static Table CreatePlainTable5()
         {
             var table = new Table();
