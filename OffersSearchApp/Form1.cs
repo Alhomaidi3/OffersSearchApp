@@ -247,15 +247,14 @@ namespace OffersSearchApp
         {
             if (isExpanded)
             {
-                // تصغير حجم الـ Sidebar
-                mainLayout.ColumnStyles[0].Width = 40; // الحجم المصغر
+                mainLayout.ColumnStyles[0].Width = 40; 
                 panelSidebar.MinimumSize = new Size(40, 0);
                 isExpanded = false;
             }
             else
             {
-                mainLayout.ColumnStyles[0].Width = 160;
-                panelSidebar.MinimumSize = new Size(160, 0);
+                mainLayout.ColumnStyles[0].Width = 140;
+                panelSidebar.MinimumSize = new Size(140, 0);
                 isExpanded = true;
             }
 

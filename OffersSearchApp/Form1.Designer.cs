@@ -74,7 +74,7 @@
             // 
             mainLayout.BackColor = Color.AliceBlue;
             mainLayout.ColumnCount = 2;
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 45F));
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             mainLayout.Controls.Add(panelSidebar, 0, 0);
             mainLayout.Controls.Add(searchPanelFlow, 1, 0);
@@ -83,12 +83,12 @@
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.Location = new Point(0, 0);
             mainLayout.Name = "mainLayout";
-            mainLayout.Padding = new Padding(10);
+            mainLayout.Padding = new Padding(8);
             mainLayout.RowCount = 3;
-            mainLayout.RowStyles.Add(new RowStyle());
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 95F));
             mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            mainLayout.RowStyles.Add(new RowStyle());
-            mainLayout.Size = new Size(1474, 756);
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+            mainLayout.Size = new Size(1400, 700);
             mainLayout.TabIndex = 0;
             // 
             // panelSidebar
@@ -99,11 +99,11 @@
             panelSidebar.Controls.Add(groupBox2);
             panelSidebar.Controls.Add(groupBox1);
             panelSidebar.Dock = DockStyle.Fill;
-            panelSidebar.Location = new Point(13, 13);
-            panelSidebar.MinimumSize = new Size(40, 0);
+            panelSidebar.Location = new Point(11, 11);
+            panelSidebar.MinimumSize = new Size(45, 0);
             panelSidebar.Name = "panelSidebar";
             mainLayout.SetRowSpan(panelSidebar, 3);
-            panelSidebar.Size = new Size(40, 730);
+            panelSidebar.Size = new Size(45, 678);
             panelSidebar.TabIndex = 0;
             // 
             // groupBox3
@@ -112,9 +112,9 @@
             groupBox3.Controls.Add(btnDeleteAll);
             groupBox3.Controls.Add(btnToggleTheme);
             groupBox3.Controls.Add(btnOpenSuppliers);
-            groupBox3.Location = new Point(3, 480);
+            groupBox3.Location = new Point(3, 440);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(150, 180);
+            groupBox3.Size = new Size(130, 190);
             groupBox3.TabIndex = 10;
             groupBox3.TabStop = false;
             groupBox3.Text = "Other Settings";
@@ -126,9 +126,10 @@
             btnLogs.BackColor = Color.FromArgb(41, 85, 152);
             btnLogs.FlatStyle = FlatStyle.Flat;
             btnLogs.ForeColor = Color.White;
-            btnLogs.Location = new Point(10, 100);
+            btnLogs.Location = new Point(10, 105);
+            btnLogs.Margin = new Padding(5, 3, 5, 3);
             btnLogs.Name = "btnLogs";
-            btnLogs.Size = new Size(130, 30);
+            btnLogs.Size = new Size(110, 30);
             btnLogs.TabIndex = 7;
             btnLogs.Text = "📄 Activity Logs";
             btnLogs.UseVisualStyleBackColor = false;
@@ -140,11 +141,12 @@
             btnDeleteAll.BackColor = Color.Crimson;
             btnDeleteAll.FlatStyle = FlatStyle.Flat;
             btnDeleteAll.ForeColor = Color.White;
-            btnDeleteAll.Location = new Point(10, 140);
+            btnDeleteAll.Location = new Point(10, 145);
+            btnDeleteAll.Margin = new Padding(5, 3, 5, 3);
             btnDeleteAll.Name = "btnDeleteAll";
-            btnDeleteAll.Size = new Size(130, 30);
+            btnDeleteAll.Size = new Size(110, 30);
             btnDeleteAll.TabIndex = 12;
-            btnDeleteAll.Text = "Delete All";
+            btnDeleteAll.Text = "🗑️ Delete All";
             btnDeleteAll.UseVisualStyleBackColor = false;
             // 
             // btnToggleTheme
@@ -153,9 +155,10 @@
             btnToggleTheme.BackColor = Color.FromArgb(128, 128, 255);
             btnToggleTheme.FlatStyle = FlatStyle.Flat;
             btnToggleTheme.ForeColor = Color.White;
-            btnToggleTheme.Location = new Point(10, 60);
+            btnToggleTheme.Location = new Point(10, 65);
+            btnToggleTheme.Margin = new Padding(5, 3, 5, 3);
             btnToggleTheme.Name = "btnToggleTheme";
-            btnToggleTheme.Size = new Size(130, 30);
+            btnToggleTheme.Size = new Size(110, 30);
             btnToggleTheme.TabIndex = 10;
             btnToggleTheme.Text = "🌙 Dark Mode";
             btnToggleTheme.UseVisualStyleBackColor = false;
@@ -167,11 +170,12 @@
             btnOpenSuppliers.BackColor = SystemColors.ControlDark;
             btnOpenSuppliers.FlatStyle = FlatStyle.Flat;
             btnOpenSuppliers.ForeColor = Color.White;
-            btnOpenSuppliers.Location = new Point(10, 20);
+            btnOpenSuppliers.Location = new Point(10, 25);
+            btnOpenSuppliers.Margin = new Padding(5, 3, 5, 3);
             btnOpenSuppliers.Name = "btnOpenSuppliers";
-            btnOpenSuppliers.Size = new Size(135, 30);
+            btnOpenSuppliers.Size = new Size(110, 30);
             btnOpenSuppliers.TabIndex = 11;
-            btnOpenSuppliers.Text = "Suppliers Managment";
+            btnOpenSuppliers.Text = "Suppliers Mgmt";
             btnOpenSuppliers.UseVisualStyleBackColor = false;
             btnOpenSuppliers.Click += btnOpenSuppliers_Click_1;
             // 
@@ -184,7 +188,7 @@
             btnMenu.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
             btnMenu.Location = new Point(0, 0);
             btnMenu.Name = "btnMenu";
-            btnMenu.Size = new Size(40, 50);
+            btnMenu.Size = new Size(45, 50);
             btnMenu.TabIndex = 4;
             btnMenu.Text = "☰";
             btnMenu.UseVisualStyleBackColor = false;
@@ -195,9 +199,9 @@
             groupBox2.Controls.Add(BtnDeleteOffer);
             groupBox2.Controls.Add(btnAddOffer);
             groupBox2.Controls.Add(btnEditOffer);
-            groupBox2.Location = new Point(3, 120);
+            groupBox2.Location = new Point(3, 100);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(150, 140);
+            groupBox2.Size = new Size(130, 145);
             groupBox2.TabIndex = 9;
             groupBox2.TabStop = false;
             groupBox2.Text = "Offers Management";
@@ -210,10 +214,11 @@
             BtnDeleteOffer.FlatStyle = FlatStyle.Flat;
             BtnDeleteOffer.ForeColor = Color.White;
             BtnDeleteOffer.Location = new Point(10, 100);
+            BtnDeleteOffer.Margin = new Padding(5, 3, 5, 3);
             BtnDeleteOffer.Name = "BtnDeleteOffer";
-            BtnDeleteOffer.Size = new Size(130, 30);
+            BtnDeleteOffer.Size = new Size(110, 30);
             BtnDeleteOffer.TabIndex = 7;
-            BtnDeleteOffer.Text = "Delete Offer";
+            BtnDeleteOffer.Text = "❌ Delete Offer";
             BtnDeleteOffer.UseVisualStyleBackColor = false;
             BtnDeleteOffer.Click += BtnDeleteOffer_Click;
             // 
@@ -224,10 +229,11 @@
             btnAddOffer.FlatStyle = FlatStyle.Flat;
             btnAddOffer.ForeColor = Color.White;
             btnAddOffer.Location = new Point(10, 20);
+            btnAddOffer.Margin = new Padding(5, 3, 5, 3);
             btnAddOffer.Name = "btnAddOffer";
-            btnAddOffer.Size = new Size(130, 30);
+            btnAddOffer.Size = new Size(110, 30);
             btnAddOffer.TabIndex = 2;
-            btnAddOffer.Text = "Add Item";
+            btnAddOffer.Text = "➕ Add Item";
             btnAddOffer.UseVisualStyleBackColor = false;
             btnAddOffer.Click += BtnAddItem_Click;
             // 
@@ -238,10 +244,11 @@
             btnEditOffer.FlatStyle = FlatStyle.Flat;
             btnEditOffer.ForeColor = Color.White;
             btnEditOffer.Location = new Point(10, 60);
+            btnEditOffer.Margin = new Padding(5, 3, 5, 3);
             btnEditOffer.Name = "btnEditOffer";
-            btnEditOffer.Size = new Size(130, 30);
+            btnEditOffer.Size = new Size(110, 30);
             btnEditOffer.TabIndex = 0;
-            btnEditOffer.Text = "Edit Offer";
+            btnEditOffer.Text = "✏️ Edit Offer";
             btnEditOffer.UseVisualStyleBackColor = false;
             btnEditOffer.Click += BtnEditOffer_Click;
             // 
@@ -251,12 +258,12 @@
             groupBox1.Controls.Add(cbQuarter);
             groupBox1.Controls.Add(btnExportExcel);
             groupBox1.Controls.Add(btnWordReport);
-            groupBox1.Location = new Point(3, 280);
+            groupBox1.Location = new Point(3, 250);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(150, 175);
+            groupBox1.Size = new Size(130, 180);
             groupBox1.TabIndex = 8;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Import and Export Data";
+            groupBox1.Text = "Import & Export";
             groupBox1.Visible = false;
             // 
             // btnImportExcel
@@ -266,22 +273,24 @@
             btnImportExcel.FlatStyle = FlatStyle.Flat;
             btnImportExcel.ForeColor = Color.White;
             btnImportExcel.Location = new Point(10, 20);
+            btnImportExcel.Margin = new Padding(5, 3, 5, 3);
             btnImportExcel.Name = "btnImportExcel";
-            btnImportExcel.Size = new Size(130, 30);
+            btnImportExcel.Size = new Size(110, 30);
             btnImportExcel.TabIndex = 3;
-            btnImportExcel.Text = "Import from Excel";
+            btnImportExcel.Text = "📂 Import Excel";
             btnImportExcel.UseVisualStyleBackColor = false;
             btnImportExcel.Click += BtnImportExcel_Click;
             // 
             // cbQuarter
             // 
+            cbQuarter.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbQuarter.Font = new Font("Segoe UI", 9F);
             cbQuarter.FormattingEnabled = true;
             cbQuarter.Items.AddRange(new object[] { "Q1", "Q2", "Q3", "Q4" });
-            cbQuarter.Location = new Point(10, 140);
+            cbQuarter.Location = new Point(10, 134);
             cbQuarter.Name = "cbQuarter";
-            cbQuarter.Size = new Size(130, 23);
+            cbQuarter.Size = new Size(110, 23);
             cbQuarter.TabIndex = 6;
-            cbQuarter.Text = "Quarter";
             // 
             // btnExportExcel
             // 
@@ -289,11 +298,12 @@
             btnExportExcel.BackColor = Color.SeaGreen;
             btnExportExcel.FlatStyle = FlatStyle.Flat;
             btnExportExcel.ForeColor = Color.White;
-            btnExportExcel.Location = new Point(10, 60);
+            btnExportExcel.Location = new Point(10, 58);
+            btnExportExcel.Margin = new Padding(5, 3, 5, 3);
             btnExportExcel.Name = "btnExportExcel";
-            btnExportExcel.Size = new Size(130, 30);
+            btnExportExcel.Size = new Size(110, 30);
             btnExportExcel.TabIndex = 5;
-            btnExportExcel.Text = "Export To Excel";
+            btnExportExcel.Text = "📊 Export Excel";
             btnExportExcel.UseVisualStyleBackColor = false;
             btnExportExcel.Click += BtnExportExcel_Click;
             // 
@@ -303,17 +313,20 @@
             btnWordReport.BackColor = Color.FromArgb(41, 85, 152);
             btnWordReport.FlatStyle = FlatStyle.Flat;
             btnWordReport.ForeColor = Color.White;
-            btnWordReport.Location = new Point(10, 100);
+            btnWordReport.Location = new Point(10, 96);
+            btnWordReport.Margin = new Padding(5, 3, 5, 3);
             btnWordReport.Name = "btnWordReport";
-            btnWordReport.Size = new Size(130, 30);
+            btnWordReport.Size = new Size(110, 30);
             btnWordReport.TabIndex = 6;
-            btnWordReport.Text = "Word Report";
+            btnWordReport.Text = "📄 Word Report";
             btnWordReport.UseVisualStyleBackColor = false;
             btnWordReport.Click += BtnWordReport_Click;
             // 
             // searchPanelFlow
             // 
             searchPanelFlow.AutoScroll = true;
+            searchPanelFlow.AutoSize = true;
+            searchPanelFlow.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             searchPanelFlow.BackColor = Color.AliceBlue;
             searchPanelFlow.Controls.Add(panel_ProductName);
             searchPanelFlow.Controls.Add(panel_SupplierName);
@@ -324,25 +337,28 @@
             searchPanelFlow.Controls.Add(panel_Quarter);
             searchPanelFlow.Controls.Add(btnClearSearch);
             searchPanelFlow.Dock = DockStyle.Fill;
-            searchPanelFlow.Location = new Point(53, 13);
+            searchPanelFlow.Location = new Point(56, 11);
             searchPanelFlow.Name = "searchPanelFlow";
             searchPanelFlow.Padding = new Padding(5);
-            searchPanelFlow.Size = new Size(1408, 100);
+            searchPanelFlow.Size = new Size(1333, 89);
             searchPanelFlow.TabIndex = 1;
             // 
             // panel_ProductName
             // 
+            panel_ProductName.AutoSize = true;
             panel_ProductName.Controls.Add(tb_ProductName);
             panel_ProductName.Controls.Add(lbl_ProductName);
             panel_ProductName.Location = new Point(8, 8);
             panel_ProductName.Margin = new Padding(3, 3, 5, 3);
+            panel_ProductName.MinimumSize = new Size(120, 60);
             panel_ProductName.Name = "panel_ProductName";
-            panel_ProductName.Size = new Size(130, 60);
+            panel_ProductName.Size = new Size(133, 60);
             panel_ProductName.TabIndex = 0;
             // 
             // tb_ProductName
             // 
-            tb_ProductName.Location = new Point(0, 25);
+            tb_ProductName.Font = new Font("Segoe UI", 9F);
+            tb_ProductName.Location = new Point(0, 24);
             tb_ProductName.Name = "tb_ProductName";
             tb_ProductName.Size = new Size(130, 23);
             tb_ProductName.TabIndex = 1;
@@ -353,24 +369,27 @@
             lbl_ProductName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_ProductName.Location = new Point(0, 0);
             lbl_ProductName.Name = "lbl_ProductName";
-            lbl_ProductName.Size = new Size(130, 20);
+            lbl_ProductName.Size = new Size(130, 22);
             lbl_ProductName.TabIndex = 0;
             lbl_ProductName.Text = "Product Name";
             lbl_ProductName.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_SupplierName
             // 
+            panel_SupplierName.AutoSize = true;
             panel_SupplierName.Controls.Add(tb_SupplierName);
             panel_SupplierName.Controls.Add(lbl_SupplierName);
-            panel_SupplierName.Location = new Point(146, 8);
+            panel_SupplierName.Location = new Point(149, 8);
             panel_SupplierName.Margin = new Padding(3, 3, 5, 3);
+            panel_SupplierName.MinimumSize = new Size(120, 60);
             panel_SupplierName.Name = "panel_SupplierName";
-            panel_SupplierName.Size = new Size(130, 60);
+            panel_SupplierName.Size = new Size(133, 60);
             panel_SupplierName.TabIndex = 1;
             // 
             // tb_SupplierName
             // 
-            tb_SupplierName.Location = new Point(0, 25);
+            tb_SupplierName.Font = new Font("Segoe UI", 9F);
+            tb_SupplierName.Location = new Point(0, 24);
             tb_SupplierName.Name = "tb_SupplierName";
             tb_SupplierName.Size = new Size(130, 23);
             tb_SupplierName.TabIndex = 3;
@@ -381,24 +400,27 @@
             lbl_SupplierName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_SupplierName.Location = new Point(0, 0);
             lbl_SupplierName.Name = "lbl_SupplierName";
-            lbl_SupplierName.Size = new Size(130, 20);
+            lbl_SupplierName.Size = new Size(130, 22);
             lbl_SupplierName.TabIndex = 2;
             lbl_SupplierName.Text = "Supplier Name";
             lbl_SupplierName.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_Material
             // 
+            panel_Material.AutoSize = true;
             panel_Material.Controls.Add(tb_Material);
             panel_Material.Controls.Add(lbl_Material);
-            panel_Material.Location = new Point(284, 8);
+            panel_Material.Location = new Point(290, 8);
             panel_Material.Margin = new Padding(3, 3, 5, 3);
+            panel_Material.MinimumSize = new Size(120, 60);
             panel_Material.Name = "panel_Material";
-            panel_Material.Size = new Size(130, 60);
+            panel_Material.Size = new Size(133, 60);
             panel_Material.TabIndex = 2;
             // 
             // tb_Material
             // 
-            tb_Material.Location = new Point(0, 25);
+            tb_Material.Font = new Font("Segoe UI", 9F);
+            tb_Material.Location = new Point(0, 24);
             tb_Material.Name = "tb_Material";
             tb_Material.Size = new Size(130, 23);
             tb_Material.TabIndex = 5;
@@ -409,24 +431,27 @@
             lbl_Material.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_Material.Location = new Point(0, 0);
             lbl_Material.Name = "lbl_Material";
-            lbl_Material.Size = new Size(130, 20);
+            lbl_Material.Size = new Size(130, 22);
             lbl_Material.TabIndex = 4;
             lbl_Material.Text = "Material";
             lbl_Material.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_Size
             // 
+            panel_Size.AutoSize = true;
             panel_Size.Controls.Add(tb_Size);
             panel_Size.Controls.Add(lbl_Size);
-            panel_Size.Location = new Point(422, 8);
+            panel_Size.Location = new Point(431, 8);
             panel_Size.Margin = new Padding(3, 3, 5, 3);
+            panel_Size.MinimumSize = new Size(120, 60);
             panel_Size.Name = "panel_Size";
-            panel_Size.Size = new Size(130, 60);
+            panel_Size.Size = new Size(133, 60);
             panel_Size.TabIndex = 3;
             // 
             // tb_Size
             // 
-            tb_Size.Location = new Point(0, 25);
+            tb_Size.Font = new Font("Segoe UI", 9F);
+            tb_Size.Location = new Point(0, 24);
             tb_Size.Name = "tb_Size";
             tb_Size.Size = new Size(130, 23);
             tb_Size.TabIndex = 7;
@@ -437,24 +462,27 @@
             lbl_Size.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_Size.Location = new Point(0, 0);
             lbl_Size.Name = "lbl_Size";
-            lbl_Size.Size = new Size(130, 20);
+            lbl_Size.Size = new Size(130, 22);
             lbl_Size.TabIndex = 6;
             lbl_Size.Text = "Size";
             lbl_Size.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_Price
             // 
+            panel_Price.AutoSize = true;
             panel_Price.Controls.Add(tb_Price);
             panel_Price.Controls.Add(lbl_Price);
-            panel_Price.Location = new Point(560, 8);
+            panel_Price.Location = new Point(572, 8);
             panel_Price.Margin = new Padding(3, 3, 5, 3);
+            panel_Price.MinimumSize = new Size(120, 60);
             panel_Price.Name = "panel_Price";
-            panel_Price.Size = new Size(130, 60);
+            panel_Price.Size = new Size(133, 60);
             panel_Price.TabIndex = 4;
             // 
             // tb_Price
             // 
-            tb_Price.Location = new Point(0, 25);
+            tb_Price.Font = new Font("Segoe UI", 9F);
+            tb_Price.Location = new Point(0, 24);
             tb_Price.Name = "tb_Price";
             tb_Price.Size = new Size(130, 23);
             tb_Price.TabIndex = 9;
@@ -465,24 +493,27 @@
             lbl_Price.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_Price.Location = new Point(0, 0);
             lbl_Price.Name = "lbl_Price";
-            lbl_Price.Size = new Size(130, 20);
+            lbl_Price.Size = new Size(130, 22);
             lbl_Price.TabIndex = 8;
             lbl_Price.Text = "Price";
             lbl_Price.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_Contact
             // 
+            panel_Contact.AutoSize = true;
             panel_Contact.Controls.Add(tb_Contact);
             panel_Contact.Controls.Add(lbl_Contact);
-            panel_Contact.Location = new Point(698, 8);
+            panel_Contact.Location = new Point(713, 8);
             panel_Contact.Margin = new Padding(3, 3, 5, 3);
+            panel_Contact.MinimumSize = new Size(120, 60);
             panel_Contact.Name = "panel_Contact";
-            panel_Contact.Size = new Size(130, 60);
+            panel_Contact.Size = new Size(133, 60);
             panel_Contact.TabIndex = 5;
             // 
             // tb_Contact
             // 
-            tb_Contact.Location = new Point(0, 25);
+            tb_Contact.Font = new Font("Segoe UI", 9F);
+            tb_Contact.Location = new Point(0, 24);
             tb_Contact.Name = "tb_Contact";
             tb_Contact.Size = new Size(130, 23);
             tb_Contact.TabIndex = 11;
@@ -493,24 +524,27 @@
             lbl_Contact.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_Contact.Location = new Point(0, 0);
             lbl_Contact.Name = "lbl_Contact";
-            lbl_Contact.Size = new Size(130, 20);
+            lbl_Contact.Size = new Size(130, 22);
             lbl_Contact.TabIndex = 10;
             lbl_Contact.Text = "Contact";
             lbl_Contact.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel_Quarter
             // 
+            panel_Quarter.AutoSize = true;
             panel_Quarter.Controls.Add(tb_Quarter);
             panel_Quarter.Controls.Add(lbl_Quarter);
-            panel_Quarter.Location = new Point(836, 8);
+            panel_Quarter.Location = new Point(854, 8);
             panel_Quarter.Margin = new Padding(3, 3, 5, 3);
+            panel_Quarter.MinimumSize = new Size(120, 60);
             panel_Quarter.Name = "panel_Quarter";
-            panel_Quarter.Size = new Size(130, 60);
+            panel_Quarter.Size = new Size(133, 60);
             panel_Quarter.TabIndex = 6;
             // 
             // tb_Quarter
             // 
-            tb_Quarter.Location = new Point(0, 25);
+            tb_Quarter.Font = new Font("Segoe UI", 9F);
+            tb_Quarter.Location = new Point(0, 24);
             tb_Quarter.Name = "tb_Quarter";
             tb_Quarter.Size = new Size(130, 23);
             tb_Quarter.TabIndex = 13;
@@ -521,7 +555,7 @@
             lbl_Quarter.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl_Quarter.Location = new Point(0, 0);
             lbl_Quarter.Name = "lbl_Quarter";
-            lbl_Quarter.Size = new Size(130, 20);
+            lbl_Quarter.Size = new Size(130, 22);
             lbl_Quarter.TabIndex = 12;
             lbl_Quarter.Text = "Quarter";
             lbl_Quarter.TextAlign = ContentAlignment.MiddleCenter;
@@ -534,10 +568,10 @@
             btnClearSearch.FlatStyle = FlatStyle.Flat;
             btnClearSearch.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnClearSearch.ForeColor = Color.White;
-            btnClearSearch.Location = new Point(991, 30);
-            btnClearSearch.Margin = new Padding(20, 25, 10, 10);
+            btnClearSearch.Location = new Point(1002, 30);
+            btnClearSearch.Margin = new Padding(10, 25, 10, 10);
             btnClearSearch.Name = "btnClearSearch";
-            btnClearSearch.Size = new Size(132, 27);
+            btnClearSearch.Size = new Size(120, 30);
             btnClearSearch.TabIndex = 2;
             btnClearSearch.Text = "\U0001f9f9 Clear Search";
             btnClearSearch.UseVisualStyleBackColor = false;
@@ -551,7 +585,7 @@
             offersGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = Color.FromArgb(52, 152, 219);
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = Color.White;
             dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
@@ -562,21 +596,22 @@
             dataGridViewCellStyle3.BackColor = SystemColors.Window;
             dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
             dataGridViewCellStyle3.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle3.Padding = new Padding(3);
+            dataGridViewCellStyle3.Padding = new Padding(2);
             dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             offersGrid.DefaultCellStyle = dataGridViewCellStyle3;
             offersGrid.Dock = DockStyle.Fill;
             offersGrid.EnableHeadersVisualStyles = false;
-            offersGrid.Location = new Point(53, 119);
+            offersGrid.Location = new Point(56, 106);
             offersGrid.MultiSelect = false;
             offersGrid.Name = "offersGrid";
             offersGrid.ReadOnly = true;
             offersGrid.RowHeadersVisible = false;
+            offersGrid.RowTemplate.Height = 35;
             offersGrid.ScrollBars = ScrollBars.Vertical;
             offersGrid.SelectionMode = DataGridViewSelectionMode.CellSelect;
-            offersGrid.Size = new Size(1408, 597);
+            offersGrid.Size = new Size(1333, 548);
             offersGrid.TabIndex = 2;
             offersGrid.CellDoubleClick += offersGrid_CellDoubleClick;
             // 
@@ -585,18 +620,18 @@
             Panel_recordsCount.BackColor = Color.AliceBlue;
             Panel_recordsCount.Controls.Add(recordsCountLabel);
             Panel_recordsCount.Dock = DockStyle.Fill;
-            Panel_recordsCount.Location = new Point(53, 722);
+            Panel_recordsCount.Location = new Point(56, 660);
             Panel_recordsCount.Name = "Panel_recordsCount";
-            Panel_recordsCount.Size = new Size(1408, 21);
+            Panel_recordsCount.Size = new Size(1333, 29);
             Panel_recordsCount.TabIndex = 3;
             // 
             // recordsCountLabel
             // 
             recordsCountLabel.Dock = DockStyle.Right;
-            recordsCountLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            recordsCountLabel.Location = new Point(1158, 0);
+            recordsCountLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            recordsCountLabel.Location = new Point(1083, 0);
             recordsCountLabel.Name = "recordsCountLabel";
-            recordsCountLabel.Size = new Size(250, 21);
+            recordsCountLabel.Size = new Size(250, 29);
             recordsCountLabel.TabIndex = 2;
             recordsCountLabel.Text = "عدد النتائج: 0 / إجمالي";
             recordsCountLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -605,13 +640,15 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1474, 756);
+            ClientSize = new Size(1400, 700);
             Controls.Add(mainLayout);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MinimumSize = new Size(900, 550);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Offers Search App";
             mainLayout.ResumeLayout(false);
+            mainLayout.PerformLayout();
             panelSidebar.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
@@ -639,6 +676,7 @@
             Panel_recordsCount.ResumeLayout(false);
             ResumeLayout(false);
         }
+
         // Controls declarations
         private TableLayoutPanel mainLayout;
         private Panel panelSidebar;
